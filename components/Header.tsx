@@ -60,6 +60,14 @@ export default function Header() {
             Ranking
           </a>
 
+<a
+  href="/meus-palpites"
+  className="font-bold hover:text-[#0B6E4F]"
+>
+  Meus Palpites
+</a>
+          
+
           <a href="/premiacao" className="font-bold hover:text-[#0B6E4F]">
             Premiação
           </a>
@@ -123,6 +131,13 @@ export default function Header() {
             >
               Ranking
             </a>
+
+            <a
+  href="/meus-palpites"
+  className="font-bold hover:text-[#0B6E4F]"
+>
+  Meus Palpites
+</a>
 
             <a
               href="/premiacao"
