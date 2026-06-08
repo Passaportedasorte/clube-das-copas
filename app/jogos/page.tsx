@@ -9,6 +9,11 @@ export default function Jogos() {
   const [userId, setUserId] = useState("");
   const [matches, setMatches] = useState<any[]>([]);
   const [palpites, setPalpites] = useState<any>({});
+const [dashboard, setDashboard] = useState<any>({
+  pontos: 0,
+  palpitesEnviados: 0,
+  posicao: "-",
+});
 
   useEffect(() => {
     async function iniciar() {
@@ -56,6 +61,49 @@ const palpitesFormatados: any = {};
 });
 
 setPalpites(palpitesFormatados);
+
+const pontosUsuario = (palpitesSalvos || []).reduce(
+  (soma, item) => soma + (item.points || 0),
+  0
+);
+
+const { data: participantes } = await supabase
+  .from("profiles")
+  .select("id, nome, active")
+  .eq("active", true);
+
+const rankingComPontos = await Promise.all(
+  (participantes || []).map(async (p) => {
+    const { data: ps } = await supabase
+      .from("predictions")
+      .select("points")
+      .eq("user_id", p.id);
+
+    const total = (ps || []).reduce(
+      (soma, item) => soma + (item.points || 0),
+      0
+    );
+
+    return {
+      id: p.id,
+      pontos: total,
+    };
+  })
+);
+
+const rankingOrdenado = rankingComPontos.sort(
+  (a, b) => b.pontos - a.pontos
+);
+
+const posicao = rankingOrdenado.findIndex(
+  (item) => item.id === userData.user.id
+);
+
+setDashboard({
+  pontos: pontosUsuario,
+  palpitesEnviados: (palpitesSalvos || []).length,
+  posicao: posicao >= 0 ? posicao + 1 : "-",
+});
 
 setLoading(false);
     }
@@ -120,6 +168,29 @@ setLoading(false);
         <p className="text-[#0B6E4F] font-black text-sm">CLUBE DAS COPAS 2026</p>
         <h1 className="text-4xl font-black mt-3">Meus palpites</h1>
         <p className="text-black/60 mt-2">Preencha seus palpites para os jogos da Copa.</p>
+
+        <div className="grid md:grid-cols-3 gap-4 mt-8">
+  <div className="bg-white border rounded-3xl p-6">
+    <p className="text-black/50 font-bold text-sm">Minha posição</p>
+    <p className="text-3xl font-black text-[#D4AF37] mt-2">
+      #{dashboard.posicao}
+    </p>
+  </div>
+
+  <div className="bg-white border rounded-3xl p-6">
+    <p className="text-black/50 font-bold text-sm">Meus pontos</p>
+    <p className="text-3xl font-black text-[#0B6E4F] mt-2">
+      {dashboard.pontos} pts
+    </p>
+  </div>
+
+  <div className="bg-white border rounded-3xl p-6">
+    <p className="text-black/50 font-bold text-sm">Palpites enviados</p>
+    <p className="text-3xl font-black mt-2">
+      {dashboard.palpitesEnviados}
+    </p>
+  </div>
+</div>
 
         <div className="grid gap-4 mt-10">
           {matches.map((match) => (
