@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
+import { bandeiras } from "@/lib/flags";
 
 export default function Jogos() {
   const [loading, setLoading] = useState(true);
@@ -9,11 +10,11 @@ export default function Jogos() {
   const [userId, setUserId] = useState("");
   const [matches, setMatches] = useState<any[]>([]);
   const [palpites, setPalpites] = useState<any>({});
-const [dashboard, setDashboard] = useState<any>({
-  pontos: 0,
-  palpitesEnviados: 0,
-  posicao: "-",
-});
+  const [dashboard, setDashboard] = useState<any>({
+    pontos: 0,
+    palpitesEnviados: 0,
+    posicao: "-",
+  });
 
   useEffect(() => {
     async function iniciar() {
@@ -40,72 +41,73 @@ const [dashboard, setDashboard] = useState<any>({
       setLiberado(true);
 
       const { data: jogos } = await supabase
-  .from("matches")
-  .select("*")
-  .order("match_date", { ascending: true });
+        .from("matches")
+        .select("*")
+        .order("group_name", { ascending: true })
+        .order("match_date", { ascending: true });
 
-setMatches(jogos || []);
+      setMatches(jogos || []);
 
-const { data: palpitesSalvos } = await supabase
-  .from("predictions")
-  .select("*")
-  .eq("user_id", userData.user.id);
+      const { data: palpitesSalvos } = await supabase
+        .from("predictions")
+        .select("*")
+        .eq("user_id", userData.user.id);
 
-const palpitesFormatados: any = {};
+      const palpitesFormatados: any = {};
 
-(palpitesSalvos || []).forEach((palpite) => {
-  palpitesFormatados[palpite.match_id] = {
-    home_score: String(palpite.home_score),
-    away_score: String(palpite.away_score),
-  };
-});
+      (palpitesSalvos || []).forEach((palpite) => {
+        palpitesFormatados[palpite.match_id] = {
+          home_score: String(palpite.home_score),
+          away_score: String(palpite.away_score),
+        };
+      });
 
-setPalpites(palpitesFormatados);
+      setPalpites(palpitesFormatados);
 
-const pontosUsuario = (palpitesSalvos || []).reduce(
-  (soma, item) => soma + (item.points || 0),
-  0
-);
+      const pontosUsuario = (palpitesSalvos || []).reduce(
+        (soma, item) => soma + (item.points || 0),
+        0
+      );
 
-const { data: participantes } = await supabase
-  .from("profiles")
-  .select("id, nome, active")
-  .eq("active", true);
+      const { data: participantes } = await supabase
+        .from("profiles")
+        .select("id, nome, active")
+        .eq("active", true);
 
-const rankingComPontos = await Promise.all(
-  (participantes || []).map(async (p) => {
-    const { data: ps } = await supabase
-      .from("predictions")
-      .select("points")
-      .eq("user_id", p.id);
+      const rankingComPontos = await Promise.all(
+        (participantes || []).map(async (p) => {
+          const { data: ps } = await supabase
+            .from("predictions")
+            .select("points")
+            .eq("user_id", p.id);
 
-    const total = (ps || []).reduce(
-      (soma, item) => soma + (item.points || 0),
-      0
-    );
+          const total = (ps || []).reduce(
+            (soma, item) => soma + (item.points || 0),
+            0
+          );
 
-    return {
-      id: p.id,
-      pontos: total,
-    };
-  })
-);
+          return {
+            id: p.id,
+            pontos: total,
+          };
+        })
+      );
 
-const rankingOrdenado = rankingComPontos.sort(
-  (a, b) => b.pontos - a.pontos
-);
+      const rankingOrdenado = rankingComPontos.sort(
+        (a, b) => b.pontos - a.pontos
+      );
 
-const posicao = rankingOrdenado.findIndex(
-  (item) => item.id === userData.user.id
-);
+      const posicao = rankingOrdenado.findIndex(
+        (item) => item.id === userData.user.id
+      );
 
-setDashboard({
-  pontos: pontosUsuario,
-  palpitesEnviados: (palpitesSalvos || []).length,
-  posicao: posicao >= 0 ? posicao + 1 : "-",
-});
+      setDashboard({
+        pontos: pontosUsuario,
+        palpitesEnviados: (palpitesSalvos || []).length,
+        posicao: posicao >= 0 ? posicao + 1 : "-",
+      });
 
-setLoading(false);
+      setLoading(false);
     }
 
     iniciar();
@@ -146,6 +148,16 @@ setLoading(false);
     alert("Palpites salvos com sucesso!");
   }
 
+  const jogosPorGrupo = matches.reduce((acc: any, match) => {
+    const grupo = match.group_name || "Fase de Grupos";
+
+    if (!acc[grupo]) acc[grupo] = [];
+
+    acc[grupo].push(match);
+
+    return acc;
+  }, {});
+
   if (loading) return <div className="p-10">Carregando...</div>;
 
   if (!liberado) {
@@ -153,9 +165,16 @@ setLoading(false);
       <main className="min-h-screen flex items-center justify-center bg-[#FAFAF7]">
         <div className="bg-white border rounded-3xl p-8 text-center max-w-md">
           <h1 className="text-3xl font-black">Acesso não liberado</h1>
-          <p className="mt-4 text-black/60">Seu pagamento ainda não foi confirmado.</p>
-          <a href="/pagamento" className="inline-block mt-6 bg-[#0B6E4F] text-white px-6 py-3 rounded-2xl font-black">
-            Finalizar pagamento
+
+          <p className="mt-4 text-black/60">
+            Seu pagamento ainda não foi confirmado.
+          </p>
+
+          <a
+            href="/pagamento"
+            className="inline-block mt-6 bg-[#0B6E4F] text-white px-6 py-3 rounded-2xl font-black"
+          >
+            Finalizar assinatura
           </a>
         </div>
       </main>
@@ -164,67 +183,124 @@ setLoading(false);
 
   return (
     <main className="min-h-screen bg-[#FAFAF7] text-[#111111] px-6 py-10">
-      <div className="max-w-4xl mx-auto">
-        <p className="text-[#0B6E4F] font-black text-sm">CLUBE DAS COPAS 2026</p>
-        <h1 className="text-4xl font-black mt-3">Meus palpites</h1>
-        <p className="text-black/60 mt-2">Preencha seus palpites para os jogos da Copa.</p>
+      <div className="max-w-6xl mx-auto">
+        <div className="text-center">
+          <p className="text-[#0B6E4F] font-black text-sm">
+            CLUBE DAS COPAS 2026
+          </p>
 
-        <div className="grid md:grid-cols-3 gap-4 mt-8">
-  <div className="bg-white border rounded-3xl p-6">
-    <p className="text-black/50 font-bold text-sm">Minha posição</p>
-    <p className="text-3xl font-black text-[#D4AF37] mt-2">
-      #{dashboard.posicao}
-    </p>
-  </div>
+          <h1 className="text-5xl font-black mt-3 text-[#063F2F]">
+            Meus Palpites
+          </h1>
 
-  <div className="bg-white border rounded-3xl p-6">
-    <p className="text-black/50 font-bold text-sm">Meus pontos</p>
-    <p className="text-3xl font-black text-[#0B6E4F] mt-2">
-      {dashboard.pontos} pts
-    </p>
-  </div>
+          <p className="text-black/60 mt-2 text-lg">
+            Preencha seus palpites para os jogos da Copa.
+          </p>
+        </div>
 
-  <div className="bg-white border rounded-3xl p-6">
-    <p className="text-black/50 font-bold text-sm">Palpites enviados</p>
-    <p className="text-3xl font-black mt-2">
-      {dashboard.palpitesEnviados}
-    </p>
-  </div>
-</div>
+        <div className="grid md:grid-cols-3 gap-4 mt-10">
+          <div className="bg-white border rounded-3xl p-6 shadow-sm">
+            <p className="text-black/50 font-bold text-sm">Minha posição</p>
+            <p className="text-4xl font-black text-[#D4AF37] mt-2">
+              #{dashboard.posicao}
+            </p>
+          </div>
 
-        <div className="grid gap-4 mt-10">
-          {matches.map((match) => (
-            <div key={match.id} className="bg-white border rounded-3xl p-6">
-              <div className="flex items-center justify-between gap-4">
-                <span className="font-black text-lg">{match.home_team}</span>
+          <div className="bg-white border rounded-3xl p-6 shadow-sm">
+            <p className="text-black/50 font-bold text-sm">Meus pontos</p>
+            <p className="text-4xl font-black text-[#0B6E4F] mt-2">
+              {dashboard.pontos} pts
+            </p>
+          </div>
 
-                <div className="flex items-center gap-3">
-                  <input
-  type="number"
-  min="0"
-  value={palpites[match.id]?.home_score || ""}
-  className="w-16 border rounded-xl p-2 text-center"
-  onChange={(e) => atualizarPalpite(match.id, "home_score", e.target.value)}
-/>
-                  <span className="font-black">x</span>
-                  <input
-  type="number"
-  min="0"
-  value={palpites[match.id]?.away_score || ""}
-  className="w-16 border rounded-xl p-2 text-center"
-  onChange={(e) => atualizarPalpite(match.id, "away_score", e.target.value)}
-/>
-                </div>
+          <div className="bg-white border rounded-3xl p-6 shadow-sm">
+            <p className="text-black/50 font-bold text-sm">Palpites enviados</p>
+            <p className="text-4xl font-black mt-2">
+              {dashboard.palpitesEnviados}
+            </p>
+          </div>
+        </div>
 
-                <span className="font-black text-lg">{match.away_team}</span>
+        <div className="mt-12 space-y-12">
+          {Object.entries(jogosPorGrupo).map(([grupo, jogos]: any) => (
+            <section key={grupo}>
+              <div className="flex items-center gap-4 mb-5">
+                <h2 className="text-3xl font-black text-[#063F2F]">
+                  {grupo}
+                </h2>
+
+                <div className="h-px flex-1 bg-black/10" />
               </div>
-            </div>
+
+              <div className="grid gap-4">
+                {jogos.map((match: any) => (
+                  <div
+                    key={match.id}
+                    className="bg-white border rounded-3xl p-6 shadow-sm"
+                  >
+                    <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-4">
+                      <div className="flex items-center gap-4">
+                        <span className="text-4xl">
+                          {bandeiras[match.home_team] || "🏳️"}
+                        </span>
+
+                        <span className="font-black text-xl">
+                          {match.home_team}
+                        </span>
+                      </div>
+
+                      <div className="flex justify-center items-center gap-4">
+                        <input
+                          type="number"
+                          min="0"
+                          value={palpites[match.id]?.home_score || ""}
+                          className="w-20 h-14 border rounded-2xl text-center text-2xl font-black"
+                          onChange={(e) =>
+                            atualizarPalpite(
+                              match.id,
+                              "home_score",
+                              e.target.value
+                            )
+                          }
+                        />
+
+                        <span className="text-2xl font-black">x</span>
+
+                        <input
+                          type="number"
+                          min="0"
+                          value={palpites[match.id]?.away_score || ""}
+                          className="w-20 h-14 border rounded-2xl text-center text-2xl font-black"
+                          onChange={(e) =>
+                            atualizarPalpite(
+                              match.id,
+                              "away_score",
+                              e.target.value
+                            )
+                          }
+                        />
+                      </div>
+
+                      <div className="flex justify-end items-center gap-4 text-right">
+                        <span className="font-black text-xl">
+                          {match.away_team}
+                        </span>
+
+                        <span className="text-4xl">
+                          {bandeiras[match.away_team] || "🏳️"}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </section>
           ))}
         </div>
 
         <button
           onClick={salvarPalpites}
-          className="w-full bg-[#0B6E4F] text-white rounded-2xl py-4 font-black mt-8"
+          className="w-full bg-[#0B6E4F] text-white rounded-2xl py-4 font-black mt-10"
         >
           Salvar Palpites
         </button>
