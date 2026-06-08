@@ -9,8 +9,8 @@ export default function Jogos() {
   const [liberado, setLiberado] = useState(false);
   const [userId, setUserId] = useState("");
   const [matches, setMatches] = useState<any[]>([]);
-  const [rodadaAberta, setRodadaAberta] = useState("Rodada 1");
   const [palpites, setPalpites] = useState<any>({});
+  const [rodadaAberta, setRodadaAberta] = useState("Rodada 1");
   const [dashboard, setDashboard] = useState<any>({
     pontos: 0,
     palpitesEnviados: 0,
@@ -45,7 +45,8 @@ export default function Jogos() {
         .from("matches")
         .select("*")
         .order("match_date", { ascending: true });
-        setMatches(jogos || []);
+
+      setMatches(jogos || []);
 
       const { data: palpitesSalvos } = await supabase
         .from("predictions")
@@ -70,7 +71,7 @@ export default function Jogos() {
 
       const { data: participantes } = await supabase
         .from("profiles")
-        .select("id, nome, active")
+        .select("id, active")
         .eq("active", true);
 
       const rankingComPontos = await Promise.all(
@@ -112,6 +113,29 @@ export default function Jogos() {
     iniciar();
   }, []);
 
+  function codigoBandeira(nome: string) {
+    return bandeiras[nome?.trim()] || "";
+  }
+
+  function formatarDataHora(matchDate: string) {
+    return new Date(matchDate).toLocaleString("pt-BR", {
+      timeZone: "America/Sao_Paulo",
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  }
+
+  function palpiteBloqueado(matchDate: string) {
+    const agora = new Date();
+    const dataJogo = new Date(matchDate);
+    const limite = new Date(dataJogo.getTime() - 30 * 60 * 1000);
+
+    return agora >= limite;
+  }
+
   function atualizarPalpite(matchId: string, campo: string, valor: string) {
     setPalpites((prev: any) => ({
       ...prev,
@@ -124,19 +148,19 @@ export default function Jogos() {
 
   async function salvarPalpites() {
     const jogosLiberados = matches.filter(
-  (match) => !palpiteBloqueado(match.match_date)
-);
+      (match) => !palpiteBloqueado(match.match_date)
+    );
 
-const idsLiberados = jogosLiberados.map((match) => match.id);
+    const idsLiberados = jogosLiberados.map((match) => match.id);
 
-const registros = Object.entries(palpites)
-  .filter(([matchId]) => idsLiberados.includes(matchId))
-  .map(([matchId, palpite]: any) => ({
-      user_id: userId,
-      match_id: matchId,
-      home_score: Number(palpite.home_score),
-      away_score: Number(palpite.away_score),
-    }));
+    const registros = Object.entries(palpites)
+      .filter(([matchId]) => idsLiberados.includes(matchId))
+      .map(([matchId, palpite]: any) => ({
+        user_id: userId,
+        match_id: matchId,
+        home_score: Number(palpite.home_score),
+        away_score: Number(palpite.away_score),
+      }));
 
     if (registros.length === 0) {
       alert("Preencha pelo menos um palpite.");
@@ -155,29 +179,37 @@ const registros = Object.entries(palpites)
     alert("Palpites salvos com sucesso!");
   }
 
- const jogosPorRodada = matches.reduce((acc: any, match) => {
-  const rodada = match.round_name || "Fase de Grupos";
+  const jogosPorRodada = matches.reduce((acc: any, match) => {
+    const rodada = match.round_name || "Fase de Grupos";
 
-  if (!acc[rodada]) acc[rodada] = [];
+    if (!acc[rodada]) {
+      acc[rodada] = [];
+    }
 
-  acc[rodada].push(match);
+    acc[rodada].push(match);
 
-  return acc;
-}, {});
+    return acc;
+  }, {});
 
-  if (loading) return <div className="p-10">Carregando...</div>;
+  function agruparPorGrupo(jogos: any[]) {
+    return jogos.reduce((acc: any, match) => {
+      const grupo = match.group_name || "Grupo";
+
+      if (!acc[grupo]) {
+        acc[grupo] = [];
+      }
+
+      acc[grupo].push(match);
+
+      return acc;
+    }, {});
+  }
+
+  if (loading) {
+    return <div className="p-10">Carregando...</div>;
+  }
 
   if (!liberado) {
-
-    function palpiteBloqueado(matchDate: string) {
-  const agora = new Date();
-  const dataJogo = new Date(matchDate);
-
-  const limite = new Date(dataJogo.getTime() - 30 * 60 * 1000);
-
-  return agora >= limite;
-}
-
     return (
       <main className="min-h-screen flex items-center justify-center bg-[#FAFAF7]">
         <div className="bg-white border rounded-3xl p-8 text-center max-w-md">
@@ -197,27 +229,6 @@ const registros = Object.entries(palpites)
       </main>
     );
   }
-
-function palpiteBloqueado(matchDate: string) {
-  const agora = new Date();
-  const dataJogo = new Date(matchDate);
-
-  const limite = new Date(dataJogo.getTime() - 30 * 60 * 1000);
-
-  return agora >= limite;
-}
-
-function formatarDataHora(matchDate: string) {
-  return new Date(matchDate).toLocaleString("pt-BR", {
-    timeZone: "America/Sao_Paulo",
-    day: "2-digit",
-    month: "2-digit",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
-}
-
 
   return (
     <main className="min-h-screen bg-[#FAFAF7] text-[#111111] px-6 py-10">
@@ -252,138 +263,169 @@ function formatarDataHora(matchDate: string) {
           </div>
 
           <div className="bg-white border rounded-3xl p-6 shadow-sm">
-            <p className="text-black/50 font-bold text-sm">Palpites enviados</p>
+            <p className="text-black/50 font-bold text-sm">
+              Palpites enviados
+            </p>
+
             <p className="text-4xl font-black mt-2">
               {dashboard.palpitesEnviados}
             </p>
           </div>
         </div>
 
-        <div className="mt-12 space-y-12">
+        <div className="mt-12 space-y-6">
           {Object.entries(jogosPorRodada).map(([rodada, jogos]: any) => {
-  const aberta = rodadaAberta === rodada;
+            const aberta = rodadaAberta === rodada;
 
-  return (
-    <section key={rodada} className="bg-white border rounded-3xl overflow-hidden">
-      <button
-        type="button"
-        onClick={() => setRodadaAberta(aberta ? "" : rodada)}
-        className="w-full flex items-center justify-between p-6 text-left"
-      >
-        <div>
-          <h2 className="text-2xl font-black text-[#063F2F]">
-            {rodada}
-          </h2>
+            return (
+              <section
+                key={rodada}
+                className="bg-white border rounded-3xl overflow-hidden"
+              >
+                <button
+                  type="button"
+                  onClick={() => setRodadaAberta(aberta ? "" : rodada)}
+                  className="w-full flex items-center justify-between p-6 text-left"
+                >
+                  <div>
+                    <h2 className="text-2xl font-black text-[#063F2F]">
+                      {rodada}
+                    </h2>
 
-          <p className="text-sm text-black/50 font-bold mt-1">
-            {jogos.length} jogos
-          </p>
-        </div>
-
-        <span className="text-3xl font-black text-[#0B6E4F]">
-          {aberta ? "−" : "+"}
-        </span>
-      </button>
-
-      {aberta && (
-        <div className="grid gap-4 p-4 pt-0">
-          {jogos.map((match: any) => (
-                  <div
-                    key={match.id}
-                    className="bg-white border rounded-3xl p-6 shadow-sm"
-                  >
-                    <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-4">
-                      <div className="flex items-center gap-4">
-                      {bandeiras[match.home_team] ? (
-  <img
-  src={`https://flagcdn.com/${bandeiras[match.home_team]}.svg`}
-  alt={match.home_team}
-  referrerPolicy="no-referrer"
-  className="w-10 h-7 object-cover rounded"
-/>
-) : (
-  <span className="text-2xl">🏳️</span>
-)}
-
-                        <span className="font-black text-xl">
-                          {match.home_team}
-                        </span>
-                      </div>
-
-                      <div className="flex justify-center items-center gap-4">
-                        <input
-                          type="number"
-                          min="0"
-                          disabled={palpiteBloqueado(match.match_date)}
-                          value={palpites[match.id]?.home_score || ""}
-                          className="w-20 h-14 border rounded-2xl text-center text-2xl font-black"
-                          onChange={(e) =>
-                            atualizarPalpite(
-                              match.id,
-                              "home_score",
-                              e.target.value
-                            )
-                          }
-                        />
-
-                        <span className="text-2xl font-black">x</span>
-
-                        <input
-                          type="number"
-                          min="0"
-                          disabled={palpiteBloqueado(match.match_date)}
-                          value={palpites[match.id]?.away_score || ""}
-                          className="w-20 h-14 border rounded-2xl text-center text-2xl font-black"
-                          onChange={(e) =>
-                            atualizarPalpite(
-                              match.id,
-                              "away_score",
-                              e.target.value
-                            )
-                          }
-                        />
-                      </div>
-
-                      <div className="flex justify-end items-center gap-4 text-right">
-                        <span className="font-black text-xl">
-                          {match.away_team}
-                        </span>
-
-                        {bandeiras[match.away_team] ? (
-  <img
-  src={`https://flagcdn.com/${bandeiras[match.away_team]}.svg`}
-  alt={match.away_team}
-  referrerPolicy="no-referrer"
-  className="w-10 h-7 object-cover rounded"
-/>
-) : (
-  <span className="text-2xl">🏳️</span>
-)}
-                      </div>
-                    </div>
-<div className="mt-4 text-center">
-  <p className="text-sm font-bold text-black/50">
-    {formatarDataHora(match.match_date)}
-  </p>
-
-  {palpiteBloqueado(match.match_date) ? (
-    <p className="text-red-600 font-bold text-sm mt-2">
-      🔒 Palpites encerrados para este jogo
-    </p>
-  ) : (
-    <p className="text-[#0B6E4F] font-bold text-sm mt-2">
-      Palpites liberados até 30 minutos antes do jogo
-    </p>
-  )}
-</div>
-
+                    <p className="text-sm text-black/50 font-bold mt-1">
+                      {jogos.length} jogos
+                    </p>
                   </div>
-                        ))}
-        </div>
-      )}
-    </section>
-  );
-})}
+
+                  <span className="text-3xl font-black text-[#0B6E4F]">
+                    {aberta ? "−" : "+"}
+                  </span>
+                </button>
+
+                {aberta && (
+                  <div className="grid gap-6 p-4 pt-0">
+                    {Object.entries(agruparPorGrupo(jogos)).map(
+                      ([grupo, jogosDoGrupo]: any) => (
+                        <div key={grupo}>
+                          <h3 className="text-xl font-black text-[#0B6E4F] mb-4">
+                            {grupo}
+                          </h3>
+
+                          <div className="grid gap-4">
+                            {jogosDoGrupo.map((match: any) => (
+                              <div
+                                key={match.id}
+                                className="bg-[#FAFAF7] border rounded-3xl p-6 shadow-sm"
+                              >
+                                <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-4">
+                                  <div className="flex items-center gap-4">
+                                    {codigoBandeira(match.home_team) ? (
+                                      <img
+                                        src={`https://flagcdn.com/w80/${codigoBandeira(
+                                          match.home_team
+                                        )}.png`}
+                                        alt={match.home_team}
+                                        className="w-12 h-8 object-cover rounded shadow-sm"
+                                      />
+                                    ) : (
+                                      <span className="text-2xl">🏳️</span>
+                                    )}
+
+                                    <span className="font-black text-xl">
+                                      {match.home_team}
+                                    </span>
+                                  </div>
+
+                                  <div className="flex justify-center items-center gap-4">
+                                    <input
+                                      type="number"
+                                      min="0"
+                                      disabled={palpiteBloqueado(
+                                        match.match_date
+                                      )}
+                                      value={
+                                        palpites[match.id]?.home_score || ""
+                                      }
+                                      className="w-20 h-14 border rounded-2xl text-center text-2xl font-black disabled:bg-gray-100 disabled:text-black/40"
+                                      onChange={(e) =>
+                                        atualizarPalpite(
+                                          match.id,
+                                          "home_score",
+                                          e.target.value
+                                        )
+                                      }
+                                    />
+
+                                    <span className="text-2xl font-black">
+                                      x
+                                    </span>
+
+                                    <input
+                                      type="number"
+                                      min="0"
+                                      disabled={palpiteBloqueado(
+                                        match.match_date
+                                      )}
+                                      value={
+                                        palpites[match.id]?.away_score || ""
+                                      }
+                                      className="w-20 h-14 border rounded-2xl text-center text-2xl font-black disabled:bg-gray-100 disabled:text-black/40"
+                                      onChange={(e) =>
+                                        atualizarPalpite(
+                                          match.id,
+                                          "away_score",
+                                          e.target.value
+                                        )
+                                      }
+                                    />
+                                  </div>
+
+                                  <div className="flex justify-end items-center gap-4 text-right">
+                                    <span className="font-black text-xl">
+                                      {match.away_team}
+                                    </span>
+
+                                    {codigoBandeira(match.away_team) ? (
+                                      <img
+                                        src={`https://flagcdn.com/w80/${codigoBandeira(
+                                          match.away_team
+                                        )}.png`}
+                                        alt={match.away_team}
+                                        className="w-12 h-8 object-cover rounded shadow-sm"
+                                      />
+                                    ) : (
+                                      <span className="text-2xl">🏳️</span>
+                                    )}
+                                  </div>
+                                </div>
+
+                                <div className="mt-4 text-center">
+                                  <p className="text-sm font-bold text-black/50">
+                                    {formatarDataHora(match.match_date)}
+                                  </p>
+
+                                  {palpiteBloqueado(match.match_date) ? (
+                                    <p className="text-red-600 font-bold text-sm mt-2">
+                                      🔒 Palpites encerrados para este jogo
+                                    </p>
+                                  ) : (
+                                    <p className="text-[#0B6E4F] font-bold text-sm mt-2">
+                                      ⏳ Palpites liberados até 30 minutos antes
+                                      do jogo
+                                    </p>
+                                  )}
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )
+                    )}
+                  </div>
+                )}
+              </section>
+            );
+          })}
         </div>
 
         <button
