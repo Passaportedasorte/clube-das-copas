@@ -46,21 +46,28 @@ const [admin, setAdmin] = useState(false);
   }
 
   async function salvarResultado(
-    matchId: string,
-    home: number,
-    away: number
-  ) {
-    await supabase
-      .from("matches")
-      .update({
-        home_score: home,
-        away_score: away,
-        status: "finished",
-      })
-      .eq("id", matchId);
-
-    alert("Resultado salvo!");
+  matchId: string,
+  home: number,
+  away: number
+) {
+  if (Number.isNaN(home) || Number.isNaN(away)) {
+    alert("Preencha os dois placares antes de salvar.");
+    return;
   }
+
+  await supabase
+    .from("matches")
+    .update({
+      home_score: home,
+      away_score: away,
+      status: "finished",
+    })
+    .eq("id", matchId);
+
+  await carregar();
+
+  alert("Resultado salvo!");
+}
 
   async function processarPontuacao() {
   const { data: jogos } = await supabase
@@ -99,7 +106,7 @@ const [admin, setAdmin] = useState(false);
             : "draw";
 
         if (vencedorPalpite === vencedorReal) {
-          pontos = 5;
+          pontos = 3;
         }
       }
 
@@ -132,14 +139,14 @@ if (!admin) {
 
   return (
     <main className="min-h-screen p-10 bg-[#FAFAF7]">
-      <div className="flex justify-between items-center mb-8">
-  <h1 className="text-4xl font-black">
+    <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4 mb-8">
+  <h1 className="text-3xl md:text-4xl font-black">
     Admin Resultados
   </h1>
 
   <button
     onClick={processarPontuacao}
-    className="bg-[#D4AF37] text-black px-6 py-3 rounded-2xl font-black"
+    className="bg-[#D4AF37] text-black px-6 py-3 rounded-2xl font-black w-full md:w-auto"
   >
     Processar Pontuação
   </button>
@@ -161,11 +168,13 @@ function ResultadoCard({ match, onSave }: any) {
   const [away, setAway] = useState(match.away_score ?? "");
 
   return (
-    <div className="bg-white border rounded-3xl p-6 mb-4">
-      <div className="flex justify-between items-center">
-        <span>{match.home_team}</span>
+    <div className="bg-white border rounded-3xl p-5 md:p-6 mb-4">
+  <div className="grid grid-cols-1 md:grid-cols-[1fr_auto_1fr] gap-4 md:gap-6 items-center">
+    <span className="font-bold text-center md:text-left">
+      {match.home_team}
+    </span>
 
-        <div className="flex gap-2">
+    <div className="flex justify-center items-center gap-2">
           <input
             value={home}
             onChange={(e) => setHome(e.target.value)}
@@ -181,14 +190,16 @@ function ResultadoCard({ match, onSave }: any) {
           />
         </div>
 
-        <span>{match.away_team}</span>
-      </div>
+            <span className="font-bold text-center md:text-right">
+      {match.away_team}
+    </span>
+  </div>
 
       <button
         onClick={() =>
           onSave(match.id, Number(home), Number(away))
         }
-        className="mt-4 bg-[#0B6E4F] text-white px-5 py-2 rounded-xl"
+        className="mt-4 bg-[#0B6E4F] text-white px-5 py-3 rounded-xl font-bold w-full md:w-auto"
       >
         Salvar Resultado
       </button>
