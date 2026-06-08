@@ -178,6 +178,7 @@ const registros = Object.entries(palpites)
 
   return agora >= limite;
 }
+
     return (
       <main className="min-h-screen flex items-center justify-center bg-[#FAFAF7]">
         <div className="bg-white border rounded-3xl p-8 text-center max-w-md">
@@ -206,6 +207,18 @@ function palpiteBloqueado(matchDate: string) {
 
   return agora >= limite;
 }
+
+function formatarDataHora(matchDate: string) {
+  return new Date(matchDate).toLocaleString("pt-BR", {
+    timeZone: "America/Sao_Paulo",
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+}
+
 
   return (
     <main className="min-h-screen bg-[#FAFAF7] text-[#111111] px-6 py-10">
@@ -319,6 +332,22 @@ function palpiteBloqueado(matchDate: string) {
                         </span>
                       </div>
                     </div>
+<div className="mt-4 text-center">
+  <p className="text-sm font-bold text-black/50">
+    {formatarDataHora(match.match_date)}
+  </p>
+
+  {palpiteBloqueado(match.match_date) ? (
+    <p className="text-red-600 font-bold text-sm mt-2">
+      🔒 Palpites encerrados para este jogo
+    </p>
+  ) : (
+    <p className="text-[#0B6E4F] font-bold text-sm mt-2">
+      Palpites liberados até 30 minutos antes do jogo
+    </p>
+  )}
+</div>
+
                   </div>
                 ))}
               </div>
