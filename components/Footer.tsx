@@ -22,6 +22,13 @@ export default function Footer() {
             </a>
 
             <a
+  href="/faq"
+  className="text-black/70 hover:text-[#0B6E4F]"
+>
+  FAQ
+</a>
+
+            <a
               href="/politica"
               className="text-black/70 hover:text-[#0B6E4F]"
             >
