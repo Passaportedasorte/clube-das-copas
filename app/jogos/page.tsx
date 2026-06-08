@@ -9,6 +9,7 @@ export default function Jogos() {
   const [liberado, setLiberado] = useState(false);
   const [userId, setUserId] = useState("");
   const [matches, setMatches] = useState<any[]>([]);
+  const [rodadaAberta, setRodadaAberta] = useState("Rodada 1");
   const [palpites, setPalpites] = useState<any>({});
   const [dashboard, setDashboard] = useState<any>({
     pontos: 0,
@@ -259,18 +260,34 @@ function formatarDataHora(matchDate: string) {
         </div>
 
         <div className="mt-12 space-y-12">
-          {Object.entries(jogosPorRodada).map(([rodada, jogos]: any) => (
-            <section key={rodada}>
-              <div className="flex items-center gap-4 mb-5">
-                <h2 className="text-3xl font-black text-[#063F2F]">
-                  {rodada}
-                </h2>
+          {Object.entries(jogosPorRodada).map(([rodada, jogos]: any) => {
+  const aberta = rodadaAberta === rodada;
 
-                <div className="h-px flex-1 bg-black/10" />
-              </div>
+  return (
+    <section key={rodada} className="bg-white border rounded-3xl overflow-hidden">
+      <button
+        type="button"
+        onClick={() => setRodadaAberta(aberta ? "" : rodada)}
+        className="w-full flex items-center justify-between p-6 text-left"
+      >
+        <div>
+          <h2 className="text-2xl font-black text-[#063F2F]">
+            {rodada}
+          </h2>
 
-              <div className="grid gap-4">
-                {jogos.map((match: any) => (
+          <p className="text-sm text-black/50 font-bold mt-1">
+            {jogos.length} jogos
+          </p>
+        </div>
+
+        <span className="text-3xl font-black text-[#0B6E4F]">
+          {aberta ? "−" : "+"}
+        </span>
+      </button>
+
+      {aberta && (
+        <div className="grid gap-4 p-4 pt-0">
+          {jogos.map((match: any) => (
                   <div
                     key={match.id}
                     className="bg-white border rounded-3xl p-6 shadow-sm"
@@ -347,10 +364,12 @@ function formatarDataHora(matchDate: string) {
 </div>
 
                   </div>
-                ))}
-              </div>
-            </section>
-          ))}
+                        ))}
+        </div>
+      )}
+    </section>
+  );
+})}
         </div>
 
         <button
