@@ -124,7 +124,15 @@ export default function Jogos() {
   }
 
   async function salvarPalpites() {
-    const registros = Object.entries(palpites).map(([matchId, palpite]: any) => ({
+    const jogosLiberados = matches.filter(
+  (match) => !palpiteBloqueado(match.match_date)
+);
+
+const idsLiberados = jogosLiberados.map((match) => match.id);
+
+const registros = Object.entries(palpites)
+  .filter(([matchId]) => idsLiberados.includes(matchId))
+  .map(([matchId, palpite]: any) => ({
       user_id: userId,
       match_id: matchId,
       home_score: Number(palpite.home_score),
@@ -161,6 +169,15 @@ export default function Jogos() {
   if (loading) return <div className="p-10">Carregando...</div>;
 
   if (!liberado) {
+
+    function palpiteBloqueado(matchDate: string) {
+  const agora = new Date();
+  const dataJogo = new Date(matchDate);
+
+  const limite = new Date(dataJogo.getTime() - 30 * 60 * 1000);
+
+  return agora >= limite;
+}
     return (
       <main className="min-h-screen flex items-center justify-center bg-[#FAFAF7]">
         <div className="bg-white border rounded-3xl p-8 text-center max-w-md">
@@ -180,6 +197,15 @@ export default function Jogos() {
       </main>
     );
   }
+
+function palpiteBloqueado(matchDate: string) {
+  const agora = new Date();
+  const dataJogo = new Date(matchDate);
+
+  const limite = new Date(dataJogo.getTime() - 30 * 60 * 1000);
+
+  return agora >= limite;
+}
 
   return (
     <main className="min-h-screen bg-[#FAFAF7] text-[#111111] px-6 py-10">
@@ -253,6 +279,7 @@ export default function Jogos() {
                         <input
                           type="number"
                           min="0"
+                          disabled={palpiteBloqueado(match.match_date)}
                           value={palpites[match.id]?.home_score || ""}
                           className="w-20 h-14 border rounded-2xl text-center text-2xl font-black"
                           onChange={(e) =>
@@ -269,6 +296,7 @@ export default function Jogos() {
                         <input
                           type="number"
                           min="0"
+                          disabled={palpiteBloqueado(match.match_date)}
                           value={palpites[match.id]?.away_score || ""}
                           className="w-20 h-14 border rounded-2xl text-center text-2xl font-black"
                           onChange={(e) =>
