@@ -61,7 +61,24 @@ export default function Pagamento() {
     }
 
     setPix(data);
-    setLoading(false);
+setLoading(false);
+
+const intervalo = setInterval(async () => {
+  const { data: userData } = await supabase.auth.getUser();
+
+  if (!userData.user) return;
+
+  const { data: profileAtualizado } = await supabase
+    .from("profiles")
+    .select("active")
+    .eq("id", userData.user.id)
+    .single();
+
+  if (profileAtualizado?.active) {
+    clearInterval(intervalo);
+    window.location.href = "/jogos";
+  }
+}, 3000);
   }
 
   return (
