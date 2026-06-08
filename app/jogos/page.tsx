@@ -368,13 +368,13 @@ Senegal: "sn",
                                 key={match.id}
                                 className="bg-[#FAFAF7] border rounded-3xl p-6 shadow-sm"
                               >
-                                <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-4">
-                                  <div className="flex items-center gap-4">
+                                <div className="grid grid-cols-1 md:grid-cols-[1fr_auto_1fr] items-center gap-4">
+                                  <div className="flex items-center justify-center md:justify-start gap-3">
                                     {codigoBandeira(match.home_team) ? (
                                       <img
   src={`https://flagcdn.com/w80/${codigoBandeira(match.home_team)}.png`}
                                         alt={match.home_team}
-                                        className="w-12 h-8 object-cover rounded shadow-sm"
+                                        className="w-10 md:w-12 h-7 md:h-8 object-cover rounded shadow-sm"
                                       />
                                     ) : (
                                       <span className="text-2xl">🏳️</span>
@@ -395,7 +395,7 @@ Senegal: "sn",
                                       value={
                                         palpites[match.id]?.home_score || ""
                                       }
-                                      className="w-20 h-14 border rounded-2xl text-center text-2xl font-black disabled:bg-gray-100 disabled:text-black/40"
+                                      className="w-16 md:w-20 h-12 md:h-14 border rounded-2xl text-center text-xl md:text-2xl font-black disabled:bg-gray-100 disabled:text-black/40"
                                       onChange={(e) =>
                                         atualizarPalpite(
                                           match.id,
@@ -418,7 +418,7 @@ Senegal: "sn",
                                       value={
                                         palpites[match.id]?.away_score || ""
                                       }
-                                      className="w-20 h-14 border rounded-2xl text-center text-2xl font-black disabled:bg-gray-100 disabled:text-black/40"
+                                      className="w-16 md:w-20 h-12 md:h-14 border rounded-2xl text-center text-xl md:text-2xl font-black disabled:bg-gray-100 disabled:text-black/40"
                                       onChange={(e) =>
                                         atualizarPalpite(
                                           match.id,
@@ -429,7 +429,7 @@ Senegal: "sn",
                                     />
                                   </div>
 
-                                  <div className="flex justify-end items-center gap-4 text-right">
+                                  <div className="flex items-center justify-center md:justify-end gap-3 text-center md:text-right">
                                     <span className="font-black text-xl">
                                       {match.away_team}
                                     </span>
@@ -438,7 +438,7 @@ Senegal: "sn",
                                       <img
   src={`https://flagcdn.com/w80/${codigoBandeira(match.away_team)}.png`}
                                         alt={match.away_team}
-                                        className="w-12 h-8 object-cover rounded shadow-sm"
+                                        className="w-10 md:w-12 h-7 md:h-8 object-cover rounded shadow-sm"
                                       />
                                     ) : (
                                       <span className="text-2xl">🏳️</span>

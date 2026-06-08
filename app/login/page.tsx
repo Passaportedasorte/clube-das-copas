@@ -33,11 +33,11 @@ export default function Login() {
         onSubmit={entrar}
         className="w-full max-w-md bg-white border rounded-3xl p-8 shadow-sm"
       >
-        <h1 className="text-4xl font-black text-center">
+        <h1 className="text-4xl font-black text-center text-black">
           Entrar
         </h1>
 
-        <p className="text-black/60 text-center mt-3">
+        <p className="text-gray-600 text-center mt-3">
           Acesse sua conta no Clube das Copas.
         </p>
 
@@ -48,7 +48,7 @@ export default function Login() {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
-            className="w-full border rounded-2xl px-4 py-4 outline-none focus:border-[#0B6E4F]"
+            className="w-full border rounded-2xl px-4 py-4 bg-white text-black placeholder:text-black/40 outline-none focus:border-[#0B6E4F]"
           />
 
           <input
@@ -57,7 +57,7 @@ export default function Login() {
             value={senha}
             onChange={(e) => setSenha(e.target.value)}
             required
-            className="w-full border rounded-2xl px-4 py-4 outline-none focus:border-[#0B6E4F]"
+            className="w-full border rounded-2xl px-4 py-4 bg-white text-black placeholder:text-black/40 outline-none focus:border-[#0B6E4F]"
           />
 
           <button
