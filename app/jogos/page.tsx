@@ -113,9 +113,57 @@ export default function Jogos() {
     iniciar();
   }, []);
 
-  function codigoBandeira(nome: string) {
-    return bandeiras[nome?.trim()] || "";
-  }
+  function codigoBandeira(time: string) {
+  const mapa: Record<string, string> = {
+    "África do Sul": "za",
+    Alemanha: "de",
+    "Arábia Saudita": "sa",
+    Argélia: "dz",
+    Argentina: "ar",
+    Austrália: "au",
+    Áustria: "at",
+    Bélgica: "be",
+    "Bósnia e Herzegovina": "ba",
+    Brasil: "br",
+    "Cabo Verde": "cv",
+    Canadá: "ca",
+    Catar: "qa",
+    Colômbia: "co",
+    "Coreia do Sul": "kr",
+    "Costa do Marfim": "ci",
+    Croácia: "hr",
+    Curaçao: "cw",
+    Egito: "eg",
+    Equador: "ec",
+    Escócia: "gb-sct",
+    Espanha: "es",
+    "Estados Unidos": "us",
+    França: "fr",
+    Gana: "gh",
+    Haiti: "ht",
+    Holanda: "nl",
+    Inglaterra: "gb-eng",
+    Irã: "ir",
+    Iraque: "iq",
+    Japão: "jp",
+    Jordânia: "jo",
+    Marrocos: "ma",
+    México: "mx",
+    Noruega: "no",
+    "Nova Zelândia": "nz",
+    Panamá: "pa",
+    Paraguai: "py",
+    Portugal: "pt",
+    Suécia: "se",
+    Suíça: "ch",
+    Tunísia: "tn",
+    Turquia: "tr",
+    Uruguai: "uy",
+    Uzbequistão: "uz",
+  };
+
+  return mapa[time?.trim()] || "";
+}
 
   function formatarDataHora(matchDate: string) {
     return new Date(matchDate).toLocaleString("pt-BR", {
@@ -321,7 +369,7 @@ export default function Jogos() {
                                   <div className="flex items-center gap-4">
                                     {codigoBandeira(match.home_team) ? (
                                       <img
-                                        src={`https://flagcdn.com/w80/${codigoBandeira(match.home_team).toLowerCase()}.png`}
+  src={`https://flagcdn.com/w80/${codigoBandeira(match.home_team)}.png`}
                                         alt={match.home_team}
                                         className="w-12 h-8 object-cover rounded shadow-sm"
                                       />
@@ -385,7 +433,7 @@ export default function Jogos() {
 
                                     {codigoBandeira(match.away_team) ? (
                                       <img
-                                        src={`https://flagcdn.com/w80/${codigoBandeira(match.away_team).toLowerCase()}.png`}
+  src={`https://flagcdn.com/w80/${codigoBandeira(match.away_team)}.png`}
                                         alt={match.away_team}
                                         className="w-12 h-8 object-cover rounded shadow-sm"
                                       />
