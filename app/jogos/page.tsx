@@ -160,6 +160,9 @@ export default function Jogos() {
     Turquia: "tr",
     Uruguai: "uy",
     Uzbequistão: "uz",
+"República Tcheca": "cz",
+Senegal: "sn",
+"República Democrática do Congo": "cd",
   };
 
   return mapa[time?.trim()] || "";
