@@ -1,139 +1,139 @@
 export const bandeiras: Record<string, string> = {
-  México: "🇲🇽",
-  Mexico: "🇲🇽",
+  México: "mx",
+  Mexico: "mx",
 
-  "África do Sul": "🇿🇦",
-  "South Africa": "🇿🇦",
+  "África do Sul": "za",
+  "South Africa": "za",
 
-  "Coreia do Sul": "🇰🇷",
-  "Korea Republic": "🇰🇷",
+  Alemanha: "de",
+  Germany: "de",
 
-  "República Tcheca": "🇨🇿",
-  Czechia: "🇨🇿",
+  "Arábia Saudita": "sa",
+  "Saudi Arabia": "sa",
 
-  Canadá: "🇨🇦",
-  Canada: "🇨🇦",
+  Argentina: "ar",
 
-  Catar: "🇶🇦",
-  Qatar: "🇶🇦",
+  Austrália: "au",
+  Australia: "au",
 
-  "Bósnia e Herzegovina": "🇧🇦",
-  "Bosnia and Herzegovina": "🇧🇦",
+  Áustria: "at",
+  Austria: "at",
 
-  Suíça: "🇨🇭",
-  Switzerland: "🇨🇭",
+  Bélgica: "be",
+  Belgium: "be",
 
-  Brasil: "🇧🇷",
-  Brazil: "🇧🇷",
+  "Bósnia e Herzegovina": "ba",
+  "Bosnia and Herzegovina": "ba",
 
-  Escócia: "🏴",
-  Scotland: "🏴",
+  Brasil: "br",
+  Brazil: "br",
 
-  Marrocos: "🇲🇦",
-  Morocco: "🇲🇦",
+  "Cabo Verde": "cv",
 
-  Haiti: "🇭🇹",
+  Canadá: "ca",
+  Canada: "ca",
 
-  "Estados Unidos": "🇺🇸",
-  USA: "🇺🇸",
+  Catar: "qa",
+  Qatar: "qa",
 
-  Paraguai: "🇵🇾",
-  Paraguay: "🇵🇾",
+  Colômbia: "co",
+  Colombia: "co",
 
-  Turquia: "🇹🇷",
-  Türkiye: "🇹🇷",
+  "Coreia do Sul": "kr",
+  "Korea Republic": "kr",
 
-  Austrália: "🇦🇺",
-  Australia: "🇦🇺",
+  "Costa do Marfim": "ci",
+  "Côte d'Ivoire": "ci",
 
-  Alemanha: "🇩🇪",
-  Germany: "🇩🇪",
+  Croácia: "hr",
+  Croatia: "hr",
 
-  "Costa do Marfim": "🇨🇮",
-  "Côte d'Ivoire": "🇨🇮",
+  Curaçao: "cw",
 
-  Equador: "🇪🇨",
-  Ecuador: "🇪🇨",
+  Egito: "eg",
+  Egypt: "eg",
 
-  Curaçao: "🇨🇼",
+  Equador: "ec",
+  Ecuador: "ec",
 
-  Holanda: "🇳🇱",
-  Netherlands: "🇳🇱",
+  Escócia: "gb-sct",
+  Scotland: "gb-sct",
 
-  Japão: "🇯🇵",
-  Japan: "🇯🇵",
+  Espanha: "es",
+  Spain: "es",
 
-  Suécia: "🇸🇪",
-  Sweden: "🇸🇪",
+  "Estados Unidos": "us",
+  USA: "us",
 
-  Tunísia: "🇹🇳",
-  Tunisia: "🇹🇳",
+  França: "fr",
+  France: "fr",
 
-  Espanha: "🇪🇸",
-  Spain: "🇪🇸",
+  Gana: "gh",
+  Ghana: "gh",
 
-  Uruguai: "🇺🇾",
-  Uruguay: "🇺🇾",
+  Haiti: "ht",
 
-  "Arábia Saudita": "🇸🇦",
-  "Saudi Arabia": "🇸🇦",
+  Holanda: "nl",
+  Netherlands: "nl",
 
-  "Cabo Verde": "🇨🇻",
+  Inglaterra: "gb-eng",
+  England: "gb-eng",
 
-  Bélgica: "🇧🇪",
-  Belgium: "🇧🇪",
+  Irã: "ir",
+  "IR Iran": "ir",
 
-  Irã: "🇮🇷",
-  "IR Iran": "🇮🇷",
+  Iraque: "iq",
+  Iraq: "iq",
 
-  Egito: "🇪🇬",
-  Egypt: "🇪🇬",
+  Japão: "jp",
+  Japan: "jp",
 
-  "Nova Zelândia": "🇳🇿",
-  "New Zealand": "🇳🇿",
+  Jordânia: "jo",
+  Jordan: "jo",
 
-  França: "🇫🇷",
-  France: "🇫🇷",
+  Marrocos: "ma",
+  Morocco: "ma",
 
-  Senegal: "🇸🇳",
+  Noruega: "no",
+  Norway: "no",
 
-  Noruega: "🇳🇴",
-  Norway: "🇳🇴",
+  "Nova Zelândia": "nz",
+  "New Zealand": "nz",
 
-  Iraque: "🇮🇶",
-  Iraq: "🇮🇶",
+  Panamá: "pa",
+  Panama: "pa",
 
-  Argentina: "🇦🇷",
+  Paraguai: "py",
+  Paraguay: "py",
 
-  Argélia: "🇩🇿",
-  Algeria: "🇩🇿",
+  Portugal: "pt",
 
-  Áustria: "🇦🇹",
-  Austria: "🇦🇹",
+  Suécia: "se",
+  Sweden: "se",
 
-  Jordânia: "🇯🇴",
-  Jordan: "🇯🇴",
+  Suíça: "ch",
+  Switzerland: "ch",
 
-  Inglaterra: "🏴",
-  England: "🏴",
+  Tunísia: "tn",
+  Tunisia: "tn",
 
-  Croácia: "🇭🇷",
-  Croatia: "🇭🇷",
+  Turquia: "tr",
+  Türkiye: "tr",
 
-  Gana: "🇬🇭",
-  Ghana: "🇬🇭",
+  Uruguai: "uy",
+  Uruguay: "uy",
 
-  Panamá: "🇵🇦",
-  Panama: "🇵🇦",
+  Uzbequistão: "uz",
+  Uzbekistan: "uz",
 
-  Portugal: "🇵🇹",
+  Argélia: "dz",
+  Algeria: "dz",
 
-  Colômbia: "🇨🇴",
-  Colombia: "🇨🇴",
+  Senegal: "sn",
 
-  Uzbequistão: "🇺🇿",
-  Uzbekistan: "🇺🇿",
+  "República Tcheca": "cz",
+  Czechia: "cz",
 
-  "República Democrática do Congo": "🇨🇩",
-  "Congo DR": "🇨🇩",
+  "República Democrática do Congo": "cd",
+  "Congo DR": "cd",
 };

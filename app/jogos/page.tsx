@@ -321,9 +321,7 @@ export default function Jogos() {
                                   <div className="flex items-center gap-4">
                                     {codigoBandeira(match.home_team) ? (
                                       <img
-                                        src={`https://flagcdn.com/w80/${codigoBandeira(
-                                          match.home_team
-                                        )}.png`}
+                                        src={`https://flagcdn.com/w80/${codigoBandeira(match.home_team).toLowerCase()}.png`}
                                         alt={match.home_team}
                                         className="w-12 h-8 object-cover rounded shadow-sm"
                                       />
@@ -387,9 +385,7 @@ export default function Jogos() {
 
                                     {codigoBandeira(match.away_team) ? (
                                       <img
-                                        src={`https://flagcdn.com/w80/${codigoBandeira(
-                                          match.away_team
-                                        )}.png`}
+                                        src={`https://flagcdn.com/w80/${codigoBandeira(match.away_team).toLowerCase()}.png`}
                                         alt={match.away_team}
                                         className="w-12 h-8 object-cover rounded shadow-sm"
                                       />
