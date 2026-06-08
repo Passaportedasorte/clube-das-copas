@@ -91,12 +91,12 @@ export default function Home() {
             <p className="text-sm text-black/50 font-bold">Palpites</p>
 
             <p className="text-3xl font-black text-[#D4AF37] mt-2">
-              72 jogos
-            </p>
+  Copa toda
+</p>
 
-            <p className="text-black/60 text-sm mt-2">
-              Palpite nos jogos da fase de grupos.
-            </p>
+<p className="text-black/60 text-sm mt-2">
+  Palpites da fase de grupos até a grande final.
+</p>
           </div>
         </div>
 
