@@ -88,12 +88,21 @@ export default function Header() {
               </button>
             </>
           ) : (
-            <a
-              href="/cadastro"
-              className="bg-[#0B6E4F] text-white px-4 py-2 rounded-xl font-bold text-sm"
-            >
-              Entrar
-            </a>
+           <div className="flex items-center gap-3">
+  <a
+    href="/login"
+    className="font-bold hover:text-[#0B6E4F]"
+  >
+    Entrar
+  </a>
+
+  <a
+    href="/cadastro"
+    className="bg-[#0B6E4F] text-white px-4 py-2 rounded-xl font-bold text-sm"
+  >
+    Criar conta
+  </a>
+</div>
           )}
         </div>
       </div>
@@ -152,12 +161,21 @@ export default function Header() {
                 </button>
               </>
             ) : (
-              <a
-                href="/cadastro"
-                className="bg-[#0B6E4F] text-white px-4 py-3 rounded-xl font-black text-center"
-              >
-                Entrar no Clube
-              </a>
+             <div className="grid grid-cols-2 gap-3">
+  <a
+    href="/login"
+    className="border-2 border-[#0B6E4F] text-[#0B6E4F] px-4 py-3 rounded-xl font-black text-center"
+  >
+    Entrar
+  </a>
+
+  <a
+    href="/cadastro"
+    className="bg-[#0B6E4F] text-white px-4 py-3 rounded-xl font-black text-center"
+  >
+    Criar conta
+  </a>
+</div>
             )}
           </div>
         </div>

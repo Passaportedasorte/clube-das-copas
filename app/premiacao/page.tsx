@@ -47,7 +47,7 @@ export default function Premiacao() {
             </div>
 
             <div className="bg-white/10 rounded-2xl p-5">
-              <p className="text-3xl font-black text-[#D4AF37]">5 pts</p>
+              <p className="text-3xl font-black text-[#D4AF37]">3 pts</p>
               <p className="mt-2 font-bold">Acertar vencedor ou empate</p>
             </div>
 
