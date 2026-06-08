@@ -43,10 +43,8 @@ export default function Jogos() {
       const { data: jogos } = await supabase
         .from("matches")
         .select("*")
-        .order("group_name", { ascending: true })
         .order("match_date", { ascending: true });
-
-      setMatches(jogos || []);
+        setMatches(jogos || []);
 
       const { data: palpitesSalvos } = await supabase
         .from("predictions")
@@ -156,15 +154,15 @@ const registros = Object.entries(palpites)
     alert("Palpites salvos com sucesso!");
   }
 
-  const jogosPorGrupo = matches.reduce((acc: any, match) => {
-    const grupo = match.group_name || "Fase de Grupos";
+ const jogosPorRodada = matches.reduce((acc: any, match) => {
+  const rodada = match.round_name || "Fase de Grupos";
 
-    if (!acc[grupo]) acc[grupo] = [];
+  if (!acc[rodada]) acc[rodada] = [];
 
-    acc[grupo].push(match);
+  acc[rodada].push(match);
 
-    return acc;
-  }, {});
+  return acc;
+}, {});
 
   if (loading) return <div className="p-10">Carregando...</div>;
 
@@ -261,11 +259,11 @@ function formatarDataHora(matchDate: string) {
         </div>
 
         <div className="mt-12 space-y-12">
-          {Object.entries(jogosPorGrupo).map(([grupo, jogos]: any) => (
-            <section key={grupo}>
+          {Object.entries(jogosPorRodada).map(([rodada, jogos]: any) => (
+            <section key={rodada}>
               <div className="flex items-center gap-4 mb-5">
                 <h2 className="text-3xl font-black text-[#063F2F]">
-                  {grupo}
+                  {rodada}
                 </h2>
 
                 <div className="h-px flex-1 bg-black/10" />
