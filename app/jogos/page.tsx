@@ -296,10 +296,11 @@ function formatarDataHora(matchDate: string) {
                       <div className="flex items-center gap-4">
                       {bandeiras[match.home_team] ? (
   <img
-    src={`https://flagcdn.com/w40/${bandeiras[match.home_team]}.png`}
-    alt={match.home_team}
-    className="w-10 h-7 object-cover rounded"
-  />
+  src={`https://flagcdn.com/${bandeiras[match.home_team]}.svg`}
+  alt={match.home_team}
+  referrerPolicy="no-referrer"
+  className="w-10 h-7 object-cover rounded"
+/>
 ) : (
   <span className="text-2xl">🏳️</span>
 )}
@@ -350,10 +351,11 @@ function formatarDataHora(matchDate: string) {
 
                         {bandeiras[match.away_team] ? (
   <img
-    src={`https://flagcdn.com/w40/${bandeiras[match.away_team]}.png`}
-    alt={match.away_team}
-    className="w-10 h-7 object-cover rounded"
-  />
+  src={`https://flagcdn.com/${bandeiras[match.away_team]}.svg`}
+  alt={match.away_team}
+  referrerPolicy="no-referrer"
+  className="w-10 h-7 object-cover rounded"
+/>
 ) : (
   <span className="text-2xl">🏳️</span>
 )}
