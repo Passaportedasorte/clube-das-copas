@@ -1,0 +1,140 @@
+"use client";
+
+import { useState } from "react";
+import { supabase } from "@/lib/supabase";
+
+export default function Cadastro() {
+  const [erro, setErro] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  function calcularIdade(dataNascimento: string) {
+    const hoje = new Date();
+    const nascimento = new Date(dataNascimento);
+
+    let idade = hoje.getFullYear() - nascimento.getFullYear();
+    const mes = hoje.getMonth() - nascimento.getMonth();
+
+    if (mes < 0 || (mes === 0 && hoje.getDate() < nascimento.getDate())) {
+      idade--;
+    }
+
+    return idade;
+  }
+
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    setErro("");
+    setLoading(true);
+
+    const form = new FormData(e.currentTarget);
+
+    const nome = form.get("nome") as string;
+    const cpf = form.get("cpf") as string;
+    const dataNascimento = form.get("dataNascimento") as string;
+    const whatsapp = form.get("whatsapp") as string;
+    const email = form.get("email") as string;
+    const senha = form.get("senha") as string;
+    const confirmarSenha = form.get("confirmarSenha") as string;
+
+    if (senha !== confirmarSenha) {
+      setErro("As senhas não conferem.");
+      setLoading(false);
+      return;
+    }
+
+    if (calcularIdade(dataNascimento) < 18) {
+      setErro("Você precisa ter 18 anos ou mais para participar.");
+      setLoading(false);
+      return;
+    }
+
+    const { data, error } = await supabase.auth.signUp({
+  email,
+  password: senha,
+  options: {
+    data: {
+      nome,
+      cpf,
+      whatsapp,
+      data_nascimento: dataNascimento,
+    },
+  },
+});
+
+if (!error) {
+  await supabase.auth.signInWithPassword({
+    email,
+    password: senha,
+  });
+}
+
+    if (error || !data.user) {
+      setErro(error?.message || "Erro ao criar cadastro.");
+      setLoading(false);
+      return;
+    }
+
+    const { error: profileError } = await supabase.from("profiles").insert({
+  id: data.user.id,
+  nome,
+  email,
+  cpf,
+  whatsapp,
+  data_nascimento: dataNascimento,
+});
+
+    if (profileError) {
+      setErro(profileError.message);
+      setLoading(false);
+      return;
+    }
+
+    window.location.href = "/pagamento";
+  }
+
+  return (
+    <main className="min-h-screen bg-[#FAFAF7] text-[#111111] flex items-center justify-center px-6 py-10">
+      <div className="w-full max-w-md bg-white rounded-3xl p-8 shadow-sm border">
+        <p className="text-[#0B6E4F] font-black text-sm">
+          CLUBE DAS COPAS 2026
+        </p>
+
+        <h1 className="text-3xl font-black mt-3">Criar minha conta</h1>
+
+        <p className="text-black/60 mt-2">
+          Preencha seus dados para criar sua conta.
+        </p>
+
+        {erro && (
+          <div className="mt-5 bg-red-50 text-red-700 border border-red-200 rounded-2xl p-4 text-sm font-bold">
+            {erro}
+          </div>
+        )}
+
+        <form onSubmit={handleSubmit} className="mt-8 space-y-4">
+          <input name="nome" required placeholder="Nome completo" className="w-full border rounded-2xl px-4 py-4" />
+
+          <input name="cpf" required placeholder="CPF" className="w-full border rounded-2xl px-4 py-4" />
+
+          <input name="dataNascimento" required type="date" className="w-full border rounded-2xl px-4 py-4" />
+
+          <input name="whatsapp" required placeholder="WhatsApp" className="w-full border rounded-2xl px-4 py-4" />
+
+          <input name="email" required type="email" placeholder="E-mail" className="w-full border rounded-2xl px-4 py-4" />
+
+          <input name="senha" required type="password" placeholder="Senha" className="w-full border rounded-2xl px-4 py-4" />
+
+          <input name="confirmarSenha" required type="password" placeholder="Confirmar senha" className="w-full border rounded-2xl px-4 py-4" />
+
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full bg-[#0B6E4F] text-white rounded-2xl py-4 font-black disabled:opacity-60"
+          >
+            {loading ? "Criando conta..." : "Continuar"}
+          </button>
+        </form>
+      </div>
+    </main>
+  );
+}
