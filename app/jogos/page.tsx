@@ -340,15 +340,15 @@ function formatarDataHora(matchDate: string) {
                       </div>
 
                       <div className="flex justify-end items-center gap-4 text-right">
+                        <span className="font-black text-xl">
+                          {match.away_team}
+                        </span>
+
                         <img
   src={`https://flagcdn.com/w40/${bandeiras[match.away_team]}.png`}
   alt={match.away_team}
   className="w-10 h-7 object-cover rounded"
 />
-
-                        <span className="text-4xl">
-                          {bandeiras[match.away_team] || "🏳️"}
-                        </span>
                       </div>
                     </div>
 <div className="mt-4 text-center">
