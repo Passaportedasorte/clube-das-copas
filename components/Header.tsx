@@ -5,11 +5,23 @@ import { supabase } from "@/lib/supabase";
 
 export default function Header() {
   const [email, setEmail] = useState("");
+  const [active, setActive] = useState(false);
 
   useEffect(() => {
     async function carregar() {
       const { data } = await supabase.auth.getUser();
+
       setEmail(data.user?.email || "");
+
+      if (data.user) {
+        const { data: profile } = await supabase
+          .from("profiles")
+          .select("active")
+          .eq("id", data.user.id)
+          .single();
+
+        setActive(!!profile?.active);
+      }
     }
 
     carregar();
@@ -28,20 +40,28 @@ export default function Header() {
         </a>
 
         <div className="flex items-center gap-6">
-  <a href="/jogos" className="font-bold hover:text-[#0B6E4F]">
-    Jogos
-  </a>
+          <a href="/jogos" className="font-bold hover:text-[#0B6E4F]">
+            Jogos
+          </a>
 
-  <a href="/ranking" className="font-bold hover:text-[#0B6E4F]">
-    Ranking
-  </a>
+          <a href="/ranking" className="font-bold hover:text-[#0B6E4F]">
+            Ranking
+          </a>
 
-  <a href="/pagamento" className="font-bold hover:text-[#0B6E4F]">
-    Assinatura
-  </a>
-  <a href="/premiacao" className="font-bold hover:text-[#0B6E4F]">
-  Premiação
-</a>
+          <a href="/premiacao" className="font-bold hover:text-[#0B6E4F]">
+            Premiação
+          </a>
+
+          {active ? (
+            <a href="/jogos" className="font-bold text-[#0B6E4F]">
+              Minha Área
+            </a>
+          ) : (
+            <a href="/pagamento" className="font-bold hover:text-[#0B6E4F]">
+              Assinatura
+            </a>
+          )}
+
           {email ? (
             <>
               <span className="text-sm text-black/60">{email}</span>
