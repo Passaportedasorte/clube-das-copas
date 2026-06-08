@@ -13,7 +13,7 @@ export default function Footer() {
             </p>
           </div>
 
-          <div className="flex items-center gap-6 text-sm">
+          <div className="flex flex-col md:flex-row items-center gap-4 md:gap-6 text-sm">
             <a
               href="/termos"
               className="text-black/70 hover:text-[#0B6E4F]"
@@ -28,6 +28,23 @@ export default function Footer() {
               Política de Privacidade
             </a>
           </div>
+
+   <a
+  href="https://chat.whatsapp.com/IHe3sQJi7Af69b9dYp1FL1?mode=gi_t"
+  target="_blank"
+  rel="noopener noreferrer"
+  className="text-black/70 hover:text-[#0B6E4F]"
+>
+  Grupo Oficial
+</a>
+
+<a
+  href="https://instagram.com/clubedascopas"
+  target="_blank"
+  className="text-black/70 hover:text-[#0B6E4F]"
+>
+  Instagram
+</a>
         </div>
 
         <div className="mt-6 pt-6 border-t text-center text-xs text-black/50">

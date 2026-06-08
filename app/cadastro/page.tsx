@@ -6,6 +6,7 @@ import { supabase } from "@/lib/supabase";
 export default function Cadastro() {
   const [erro, setErro] = useState("");
   const [loading, setLoading] = useState(false);
+  const [aceite, setAceite] = useState(false);
 
   function calcularIdade(dataNascimento: string) {
     const hoje = new Date();
@@ -74,6 +75,11 @@ if (!error) {
       return;
     }
 
+    if (!aceite) {
+  alert("Você precisa aceitar os Termos de Uso e a Política de Privacidade.");
+  return;
+}
+
     const { error: profileError } = await supabase.from("profiles").insert({
   id: data.user.id,
   nome,
@@ -126,6 +132,36 @@ if (!error) {
 
           <input name="confirmarSenha" required type="password" placeholder="Confirmar senha" className="w-full border rounded-2xl px-4 py-4" />
 
+          
+<div className="flex items-start gap-3 mt-4">
+  <input
+    type="checkbox"
+    id="aceite"
+    checked={aceite}
+    onChange={(e) => setAceite(e.target.checked)}
+    className="mt-1"
+  />
+
+  <label htmlFor="aceite" className="text-sm text-black/70">
+    Li e aceito os{" "}
+    <a
+      href="/termos"
+      target="_blank"
+      className="font-bold text-[#0B6E4F]"
+    >
+      Termos de Uso
+    </a>{" "}
+    e a{" "}
+    <a
+      href="/politica"
+      target="_blank"
+      className="font-bold text-[#0B6E4F]"
+    >
+      Política de Privacidade
+    </a>
+    .
+  </label>
+</div>
           <button
             type="submit"
             disabled={loading}
