@@ -25,26 +25,50 @@ export default function Ranking() {
       const participantes = data || [];
 
       const rankingComPontos = await Promise.all(
-        participantes.map(async (p) => {
-          const { data: palpites } = await supabase
-            .from("predictions")
-            .select("points")
-            .eq("user_id", p.id);
+  participantes.map(async (p) => {
+    const { data: palpites } = await supabase
+      .from("predictions")
+      .select("points")
+      .eq("user_id", p.id);
 
-          const total = (palpites || []).reduce(
-            (soma, item) => soma + (item.points || 0),
-            0
-          );
+    const total = (palpites || []).reduce(
+      (soma, item) => soma + (item.points || 0),
+      0
+    );
 
-          return {
-            id: p.id,
-            nome: p.nome,
-            pontos: total,
-          };
-        })
-      );
+    const placaresExatos = (palpites || []).filter(
+      (item) => item.points === 10
+    ).length;
 
-      const rankingOrdenado = rankingComPontos.sort((a, b) => b.pontos - a.pontos);
+    const acertosResultado = (palpites || []).filter(
+      (item) => item.points === 3
+    ).length;
+
+    return {
+      id: p.id,
+      nome: p.nome,
+      pontos: total,
+      placaresExatos,
+      acertosResultado,
+    };
+  })
+);
+
+const rankingOrdenado = rankingComPontos.sort((a, b) => {
+  if (b.pontos !== a.pontos) {
+    return b.pontos - a.pontos;
+  }
+
+  if (b.placaresExatos !== a.placaresExatos) {
+    return b.placaresExatos - a.placaresExatos;
+  }
+
+  if (b.acertosResultado !== a.acertosResultado) {
+    return b.acertosResultado - a.acertosResultado;
+  }
+
+  return String(a.nome || "").localeCompare(String(b.nome || ""));
+});
 
 setRanking(rankingOrdenado);
 
@@ -125,6 +149,9 @@ if (userData.user) {
 
                 <div>
                   <p className="font-black">{item.nome}</p>
+<p className="text-xs text-black/50 mt-1">
+  Exatos: {item.placaresExatos} • Resultado: {item.acertosResultado}
+</p>
                   {index < 5 && (
                     <p className="text-sm text-[#0B6E4F] font-bold">
                       Premiação atual: {premios[index]}
