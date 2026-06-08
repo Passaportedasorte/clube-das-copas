@@ -6,6 +6,7 @@ import { supabase } from "@/lib/supabase";
 export default function Header() {
   const [email, setEmail] = useState("");
   const [active, setActive] = useState(false);
+  const [menuAberto, setMenuAberto] = useState(false);
 
   useEffect(() => {
     async function carregar() {
@@ -33,13 +34,24 @@ export default function Header() {
   }
 
   return (
-    <header className="w-full bg-white border-b px-6 py-4">
-      <div className="max-w-6xl mx-auto flex justify-between items-center">
-        <a href="/" className="font-black text-[#0B6E4F]">
+    <header className="sticky top-0 z-50 w-full bg-white border-b border-black/10 shadow-md">
+      <div className="max-w-6xl mx-auto px-4 py-4 flex justify-between items-center gap-4">
+        <a
+          href="/"
+          className="font-black text-[#0B6E4F] text-base sm:text-xl whitespace-nowrap"
+        >
           🏆 Clube das Copas
         </a>
 
-        <div className="flex items-center gap-6">
+        <button
+          type="button"
+          onClick={() => setMenuAberto(!menuAberto)}
+          className="md:hidden bg-[#0B6E4F] text-white px-4 py-2 rounded-xl font-black text-sm"
+        >
+          Menu
+        </button>
+
+        <div className="hidden md:flex items-center gap-6">
           <a href="/jogos" className="font-bold hover:text-[#0B6E4F]">
             Jogos
           </a>
@@ -64,7 +76,9 @@ export default function Header() {
 
           {email ? (
             <>
-              <span className="text-sm text-black/60">{email}</span>
+              <span className="max-w-[180px] truncate text-sm text-black/60">
+                {email}
+              </span>
 
               <button
                 onClick={sair}
@@ -83,6 +97,71 @@ export default function Header() {
           )}
         </div>
       </div>
+
+      {menuAberto && (
+        <div className="md:hidden bg-white border-t border-black/10 px-4 pb-5 shadow-lg">
+          <div className="flex flex-col gap-3 pt-4">
+            <a
+              href="/jogos"
+              className="font-bold text-black bg-black/5 rounded-xl px-4 py-3"
+            >
+              Jogos
+            </a>
+
+            <a
+              href="/ranking"
+              className="font-bold text-black bg-black/5 rounded-xl px-4 py-3"
+            >
+              Ranking
+            </a>
+
+            <a
+              href="/premiacao"
+              className="font-bold text-black bg-black/5 rounded-xl px-4 py-3"
+            >
+              Premiação
+            </a>
+
+            {active ? (
+              <a
+                href="/jogos"
+                className="font-bold text-[#0B6E4F] bg-green-50 rounded-xl px-4 py-3"
+              >
+                Minha Área
+              </a>
+            ) : (
+              <a
+                href="/pagamento"
+                className="font-bold text-[#0B6E4F] bg-green-50 rounded-xl px-4 py-3"
+              >
+                Assinatura
+              </a>
+            )}
+
+            {email ? (
+              <>
+                <span className="text-xs text-black/60 break-all px-1">
+                  {email}
+                </span>
+
+                <button
+                  onClick={sair}
+                  className="bg-black text-white px-4 py-3 rounded-xl font-bold text-sm text-left"
+                >
+                  Sair
+                </button>
+              </>
+            ) : (
+              <a
+                href="/cadastro"
+                className="bg-[#0B6E4F] text-white px-4 py-3 rounded-xl font-black text-center"
+              >
+                Entrar no Clube
+              </a>
+            )}
+          </div>
+        </div>
+      )}
     </header>
   );
 }
