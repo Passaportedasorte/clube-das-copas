@@ -19,7 +19,7 @@ export default function Ranking() {
     async function carregarRanking() {
       const { data } = await supabase
         .from("profiles")
-        .select("id, nome, active")
+        .select("id, nome, username, active")
         .eq("active", true);
 
       const participantes = data || [];
@@ -46,7 +46,7 @@ export default function Ranking() {
 
     return {
       id: p.id,
-      nome: p.nome,
+      nome: p.username || p.nome,
       pontos: total,
       placaresExatos,
       acertosResultado,

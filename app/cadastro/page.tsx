@@ -22,6 +22,14 @@ export default function Cadastro() {
     return idade;
   }
 
+  function limparUsername(valor: string) {
+    return valor
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/[^a-z0-9_]/g, "");
+  }
+
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setErro("");
@@ -30,12 +38,25 @@ export default function Cadastro() {
     const form = new FormData(e.currentTarget);
 
     const nome = form.get("nome") as string;
+    const username = limparUsername(form.get("username") as string);
     const cpf = form.get("cpf") as string;
     const dataNascimento = form.get("dataNascimento") as string;
     const whatsapp = form.get("whatsapp") as string;
     const email = form.get("email") as string;
     const senha = form.get("senha") as string;
     const confirmarSenha = form.get("confirmarSenha") as string;
+
+    if (!aceite) {
+      setErro("Você precisa aceitar os Termos de Uso e a Política de Privacidade.");
+      setLoading(false);
+      return;
+    }
+
+    if (!username || username.length < 3) {
+      setErro("O nome de usuário precisa ter pelo menos 3 caracteres.");
+      setLoading(false);
+      return;
+    }
 
     if (senha !== confirmarSenha) {
       setErro("As senhas não conferem.");
@@ -49,25 +70,31 @@ export default function Cadastro() {
       return;
     }
 
-    const { data, error } = await supabase.auth.signUp({
-  email,
-  password: senha,
-  options: {
-    data: {
-      nome,
-      cpf,
-      whatsapp,
-      data_nascimento: dataNascimento,
-    },
-  },
-});
+    const { data: usernameExiste } = await supabase
+      .from("profiles")
+      .select("id")
+      .eq("username", username)
+      .maybeSingle();
 
-if (!error) {
-  await supabase.auth.signInWithPassword({
-    email,
-    password: senha,
-  });
-}
+    if (usernameExiste) {
+      setErro("Este nome de usuário já está em uso. Escolha outro.");
+      setLoading(false);
+      return;
+    }
+
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password: senha,
+      options: {
+        data: {
+          nome,
+          username,
+          cpf,
+          whatsapp,
+          data_nascimento: dataNascimento,
+        },
+      },
+    });
 
     if (error || !data.user) {
       setErro(error?.message || "Erro ao criar cadastro.");
@@ -75,25 +102,26 @@ if (!error) {
       return;
     }
 
-    if (!aceite) {
-  alert("Você precisa aceitar os Termos de Uso e a Política de Privacidade.");
-  return;
-}
-
     const { error: profileError } = await supabase.from("profiles").insert({
-  id: data.user.id,
-  nome,
-  email,
-  cpf,
-  whatsapp,
-  data_nascimento: dataNascimento,
-});
+      id: data.user.id,
+      nome,
+      username,
+      email,
+      cpf,
+      whatsapp,
+      data_nascimento: dataNascimento,
+    });
 
     if (profileError) {
       setErro(profileError.message);
       setLoading(false);
       return;
     }
+
+    await supabase.auth.signInWithPassword({
+      email,
+      password: senha,
+    });
 
     window.location.href = "/pagamento";
   }
@@ -118,50 +146,97 @@ if (!error) {
         )}
 
         <form onSubmit={handleSubmit} className="mt-8 space-y-4">
-          <input name="nome" required placeholder="Nome completo" className="w-full border rounded-2xl px-4 py-4" />
+          <input
+            name="nome"
+            required
+            placeholder="Nome completo"
+            className="w-full border rounded-2xl px-4 py-4 bg-white text-black placeholder:text-black/40"
+          />
 
-          <input name="cpf" required placeholder="CPF" className="w-full border rounded-2xl px-4 py-4" />
+          <div>
+            <input
+              name="username"
+              required
+              minLength={3}
+              placeholder="Nome de usuário"
+              onChange={(e) => {
+                e.currentTarget.value = limparUsername(e.currentTarget.value);
+              }}
+              className="w-full border rounded-2xl px-4 py-4 bg-white text-black placeholder:text-black/40"
+            />
 
-          <input name="dataNascimento" required type="date" className="w-full border rounded-2xl px-4 py-4" />
+            <p className="text-xs text-black/50 mt-1">
+              Esse nome aparecerá publicamente no ranking. Ex: brunop, mestre2026.
+            </p>
+          </div>
 
-          <input name="whatsapp" required placeholder="WhatsApp" className="w-full border rounded-2xl px-4 py-4" />
+          <input
+            name="cpf"
+            required
+            placeholder="CPF"
+            className="w-full border rounded-2xl px-4 py-4 bg-white text-black placeholder:text-black/40"
+          />
 
-          <input name="email" required type="email" placeholder="E-mail" className="w-full border rounded-2xl px-4 py-4" />
+          <input
+            name="dataNascimento"
+            required
+            type="date"
+            className="w-full border rounded-2xl px-4 py-4 bg-white text-black"
+          />
 
-          <input name="senha" required type="password" placeholder="Senha" className="w-full border rounded-2xl px-4 py-4" />
+          <input
+            name="whatsapp"
+            required
+            placeholder="WhatsApp"
+            className="w-full border rounded-2xl px-4 py-4 bg-white text-black placeholder:text-black/40"
+          />
 
-          <input name="confirmarSenha" required type="password" placeholder="Confirmar senha" className="w-full border rounded-2xl px-4 py-4" />
+          <input
+            name="email"
+            required
+            type="email"
+            placeholder="E-mail"
+            className="w-full border rounded-2xl px-4 py-4 bg-white text-black placeholder:text-black/40"
+          />
 
-          
-<div className="flex items-start gap-3 mt-4">
-  <input
-    type="checkbox"
-    id="aceite"
-    checked={aceite}
-    onChange={(e) => setAceite(e.target.checked)}
-    className="mt-1"
-  />
+          <input
+            name="senha"
+            required
+            type="password"
+            placeholder="Senha"
+            className="w-full border rounded-2xl px-4 py-4 bg-white text-black placeholder:text-black/40"
+          />
 
-  <label htmlFor="aceite" className="text-sm text-black/70">
-    Li e aceito os{" "}
-    <a
-      href="/termos"
-      target="_blank"
-      className="font-bold text-[#0B6E4F]"
-    >
-      Termos de Uso
-    </a>{" "}
-    e a{" "}
-    <a
-      href="/politica"
-      target="_blank"
-      className="font-bold text-[#0B6E4F]"
-    >
-      Política de Privacidade
-    </a>
-    .
-  </label>
-</div>
+          <input
+            name="confirmarSenha"
+            required
+            type="password"
+            placeholder="Confirmar senha"
+            className="w-full border rounded-2xl px-4 py-4 bg-white text-black placeholder:text-black/40"
+          />
+
+          <div className="flex items-start gap-3 mt-4">
+            <input
+              type="checkbox"
+              id="aceite"
+              checked={aceite}
+              onChange={(e) => setAceite(e.target.checked)}
+              className="mt-1"
+            />
+
+            <label htmlFor="aceite" className="text-sm text-black/70">
+              Li e aceito os{" "}
+              <a href="/termos" target="_blank" className="font-bold text-[#0B6E4F]">
+                Termos de Uso
+              </a>{" "}
+              e a{" "}
+              <a href="/politica" target="_blank" className="font-bold text-[#0B6E4F]">
+                Política de Privacidade
+              </a>
+              .
+            </label>
+          </div>
+
           <button
             type="submit"
             disabled={loading}
