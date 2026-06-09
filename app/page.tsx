@@ -232,9 +232,9 @@ export default function Home() {
 
       <div className="mt-5 space-y-4">
         {[
-          ["#1", "brunocamisa10", "34 pts"],
-          ["#2", "leo13sports", "31 pts"],
-          ["#3", "jaque10", "27 pts"],
+          ["#1", "Neymar", "34 pts"],
+          ["#2", "ViniJr", "31 pts"],
+          ["#3", "Brasil2026", "27 pts"],
         ].map((item) => (
           <div
             key={item[0]}
