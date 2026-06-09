@@ -27,6 +27,33 @@ export async function POST(req: Request) {
       );
     }
 
+    const { data: profile } = await supabaseAdmin
+      .from("profiles")
+      .select("referred_by")
+      .eq("id", userId)
+      .single();
+
+    const codigoIndicacao = profile?.referred_by || "";
+
+    let valorFinal = 49.9;
+    let desconto = 0;
+    let cupomValido = false;
+
+    if (codigoIndicacao) {
+      const { data: indicador } = await supabaseAdmin
+        .from("profiles")
+        .select("id, username")
+        .eq("referral_code", codigoIndicacao)
+        .eq("active", true)
+        .maybeSingle();
+
+      if (indicador && indicador.id !== userId) {
+        valorFinal = 39.9;
+        desconto = 10;
+        cupomValido = true;
+      }
+    }
+
     const customerResponse = await fetch(`${baseUrl}/customers`, {
       method: "POST",
       headers: {
@@ -60,9 +87,11 @@ export async function POST(req: Request) {
       body: JSON.stringify({
         customer: customer.id,
         billingType: "PIX",
-        value: 49.9,
+        value: valorFinal,
         dueDate: new Date().toISOString().split("T")[0],
-        description: "Acesso Clube das Copas 2026",
+        description: cupomValido
+          ? `Acesso Clube das Copas 2026 com cupom ${codigoIndicacao}`
+          : "Acesso Clube das Copas 2026",
       }),
     });
 
@@ -90,37 +119,44 @@ export async function POST(req: Request) {
     const pix = await pixResponse.json();
 
     if (!pixResponse.ok) {
-  return NextResponse.json(pix, { status: 400 });
-}
+      return NextResponse.json(pix, { status: 400 });
+    }
 
-const { error: subscriptionError } = await supabaseAdmin
-  .from("subscriptions")
-  .insert({
-    user_id: userId,
-    asaas_payment_id: payment.id,
-    status: "pending",
-    valor: 49.9,
-    customer_name: nome,
-    customer_email: email,
-  });
+    const { error: subscriptionError } = await supabaseAdmin
+      .from("subscriptions")
+      .insert({
+        user_id: userId,
+        asaas_payment_id: payment.id,
+        status: "pending",
+        valor: valorFinal,
+        original_value: 49.9,
+        discount_value: desconto,
+        referral_code: cupomValido ? codigoIndicacao : null,
+        customer_name: nome,
+        customer_email: email,
+      });
 
-if (subscriptionError) {
-  console.log("ERRO SUBSCRIPTION:", subscriptionError);
+    if (subscriptionError) {
+      console.log("ERRO SUBSCRIPTION:", subscriptionError);
 
-  return NextResponse.json(
-    {
-      error: "PIX gerado, mas erro ao salvar assinatura.",
-      details: subscriptionError.message,
-    },
-    { status: 500 }
-  );
-}
+      return NextResponse.json(
+        {
+          error: "PIX gerado, mas erro ao salvar assinatura.",
+          details: subscriptionError.message,
+        },
+        { status: 500 }
+      );
+    }
 
-return NextResponse.json({
+    return NextResponse.json({
       paymentId: payment.id,
       invoiceUrl: payment.invoiceUrl,
       encodedImage: pix.encodedImage,
       payload: pix.payload,
+      valor: valorFinal,
+      desconto,
+      cupomValido,
+      referralCode: cupomValido ? codigoIndicacao : null,
     });
   } catch (error) {
     console.error("ERRO ASAAS:", error);

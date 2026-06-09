@@ -39,6 +39,7 @@ export default function Cadastro() {
 
     const nome = form.get("nome") as string;
     const username = limparUsername(form.get("username") as string);
+    const referralCode = limparUsername((form.get("referralCode") as string) || "");
     const cpf = form.get("cpf") as string;
     const dataNascimento = form.get("dataNascimento") as string;
     const whatsapp = form.get("whatsapp") as string;
@@ -110,7 +111,10 @@ export default function Cadastro() {
       cpf,
       whatsapp,
       data_nascimento: dataNascimento,
-    });
+      referral_code: username,
+  referred_by: referralCode || null,
+});
+  
 
     if (profileError) {
       setErro(profileError.message);
@@ -183,6 +187,18 @@ export default function Cadastro() {
             type="date"
             className="w-full border rounded-2xl px-4 py-4 bg-white text-black"
           />
+          <input
+  name="referralCode"
+  placeholder="Cupom de indicação, se tiver"
+  onChange={(e) => {
+    e.currentTarget.value = limparUsername(e.currentTarget.value);
+  }}
+  className="w-full border rounded-2xl px-4 py-4 bg-white text-black placeholder:text-black/40"
+/>
+
+<p className="text-xs text-black/50 -mt-2">
+  Se alguém indicou você, informe o cupom aqui para receber desconto.
+</p>
 
           <input
             name="whatsapp"

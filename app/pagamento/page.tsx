@@ -98,7 +98,7 @@ const intervalo = setInterval(async () => {
         <h1 className="text-3xl font-black mt-3">Finalizar inscrição</h1>
 
         <p className="text-black/60 mt-3">
-          Pague R$ 49,90 via PIX para liberar seu acesso.
+          Gere seu PIX para liberar o acesso ao Clube das Copas.
         </p>
 
         <button
@@ -117,6 +117,21 @@ const intervalo = setInterval(async () => {
 
         {pix && (
           <div className="mt-8">
+            <div className="mb-5 bg-[#FAFAF7] border rounded-2xl p-4">
+  <p className="text-sm text-black/50 font-bold">
+    Valor da inscrição
+  </p>
+
+  <p className="text-3xl font-black text-[#0B6E4F] mt-1">
+    R$ {Number(pix.valor || 49.9).toFixed(2).replace(".", ",")}
+  </p>
+
+  {pix.cupomValido && (
+    <p className="text-sm font-bold text-[#D4AF37] mt-2">
+      Cupom aplicado: -R$ {Number(pix.desconto || 0).toFixed(2).replace(".", ",")}
+    </p>
+  )}
+</div>
             <img
               src={`data:image/png;base64,${pix.encodedImage}`}
               alt="QR Code PIX"
