@@ -78,6 +78,10 @@ const [menuUsuarioAberto, setMenuUsuarioAberto] = useState(false);
             Ranking
           </a>
 
+          <a href="/ligas" className={linkClass}>
+  Ligas
+</a>
+
           <a href="/premiacao" className={linkClass}>
             Premiação
           </a>
