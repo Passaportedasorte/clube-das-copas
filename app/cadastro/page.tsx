@@ -123,7 +123,7 @@ export default function Cadastro() {
       password: senha,
     });
 
-    window.location.href = "/pagamento";
+    window.location.href = "/jogos";
   }
 
   return (
