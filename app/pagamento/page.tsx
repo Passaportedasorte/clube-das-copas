@@ -30,6 +30,13 @@ export default function Pagamento() {
     carregarUsuario();
   }, []);
 
+async function copiarPix() {
+  if (!pix?.payload) return;
+
+  await navigator.clipboard.writeText(pix.payload);
+  alert("PIX Copia e Cola copiado!");
+}
+
   async function gerarPix() {
     if (!profile) {
       setErro("Dados do usuário não encontrados.");
@@ -116,20 +123,26 @@ const intervalo = setInterval(async () => {
               className="mx-auto w-56 h-56"
             />
 
-            <textarea
-              readOnly
-              value={pix.payload}
-              className="w-full border rounded-2xl p-3 mt-4 text-xs"
-              rows={4}
-            />
+            <div className="mt-5 text-left">
+  <p className="text-sm font-black text-black mb-2">
+    PIX Copia e Cola
+  </p>
 
-            <a
-              href={pix.invoiceUrl}
-              target="_blank"
-              className="block mt-4 text-[#0B6E4F] font-black"
-            >
-              Abrir cobrança
-            </a>
+  <textarea
+    readOnly
+    value={pix.payload}
+    className="w-full border border-black/20 rounded-2xl p-3 text-xs bg-white text-black placeholder:text-black/40"
+    rows={4}
+  />
+</div>
+
+            <button
+  type="button"
+  onClick={copiarPix}
+  className="w-full mt-4 bg-[#0B6E4F] text-white rounded-2xl py-4 font-black"
+>
+  Copiar PIX Copia e Cola
+</button>
           </div>
         )}
       </div>
