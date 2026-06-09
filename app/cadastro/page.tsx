@@ -166,7 +166,7 @@ export default function Cadastro() {
             />
 
             <p className="text-xs text-black/50 mt-1">
-              Esse nome aparecerá publicamente no ranking. Ex: brunop, mestre2026.
+              Esse nome aparecerá publicamente no ranking. Ex: goleador2026, mestre2026.
             </p>
           </div>
 
