@@ -4,6 +4,7 @@ import "./globals.css";
 
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import { GoogleAnalytics } from "@next/third-parties/google";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -38,8 +39,9 @@ export default function RootLayout({
         <main className="flex-1">
           {children}
         </main>
-
+<GoogleAnalytics gaId="G-WB8NKVR319" />
         <Footer />
+        
       </body>
     </html>
   );
