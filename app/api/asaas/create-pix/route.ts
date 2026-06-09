@@ -13,6 +13,8 @@ export async function POST(req: Request) {
     const cpf = body.cpf;
     const userId = body.userId;
 
+    const valorOriginal = 49.9;
+
     if (!apiKey || !baseUrl) {
       return NextResponse.json(
         { error: "Asaas não configurado." },
@@ -33,23 +35,32 @@ export async function POST(req: Request) {
       .eq("id", userId)
       .single();
 
-    const codigoIndicacao = profile?.referred_by || "";
+    const codigoCupom = String(profile?.referred_by || "")
+      .trim()
+      .toUpperCase();
 
-    let valorFinal = 49.9;
+    let valorFinal = valorOriginal;
     let desconto = 0;
+    let percentualDesconto = 0;
     let cupomValido = false;
 
-    if (codigoIndicacao) {
-      const { data: indicador } = await supabaseAdmin
-        .from("profiles")
-        .select("id, username")
-        .eq("referral_code", codigoIndicacao)
+    if (codigoCupom) {
+      const { data: cupom } = await supabaseAdmin
+        .from("coupons")
+        .select("*")
+        .eq("code", codigoCupom)
         .eq("active", true)
         .maybeSingle();
 
-      if (indicador && indicador.id !== userId) {
-        valorFinal = 39.9;
-        desconto = 10;
+      const cupomDentroDoLimite =
+        cupom && (!cupom.max_uses || cupom.uses_count < cupom.max_uses);
+
+      if (cupomDentroDoLimite) {
+        percentualDesconto = Number(cupom.discount_percent || 0);
+        desconto = Number(
+          ((valorOriginal * percentualDesconto) / 100).toFixed(2)
+        );
+        valorFinal = Number((valorOriginal - desconto).toFixed(2));
         cupomValido = true;
       }
     }
@@ -90,7 +101,7 @@ export async function POST(req: Request) {
         value: valorFinal,
         dueDate: new Date().toISOString().split("T")[0],
         description: cupomValido
-          ? `Acesso Clube das Copas 2026 com cupom ${codigoIndicacao}`
+          ? `Acesso Clube das Copas 2026 com cupom ${codigoCupom}`
           : "Acesso Clube das Copas 2026",
       }),
     });
@@ -129,9 +140,9 @@ export async function POST(req: Request) {
         asaas_payment_id: payment.id,
         status: "pending",
         valor: valorFinal,
-        original_value: 49.9,
+        original_value: valorOriginal,
         discount_value: desconto,
-        referral_code: cupomValido ? codigoIndicacao : null,
+        referral_code: cupomValido ? codigoCupom : null,
         customer_name: nome,
         customer_email: email,
       });
@@ -148,15 +159,23 @@ export async function POST(req: Request) {
       );
     }
 
+    if (cupomValido) {
+  await supabaseAdmin.rpc("increment_coupon_usage", {
+    coupon_code: codigoCupom,
+  });
+}
+
     return NextResponse.json({
       paymentId: payment.id,
       invoiceUrl: payment.invoiceUrl,
       encodedImage: pix.encodedImage,
       payload: pix.payload,
       valor: valorFinal,
+      valorOriginal,
       desconto,
+      percentualDesconto,
       cupomValido,
-      referralCode: cupomValido ? codigoIndicacao : null,
+      referralCode: cupomValido ? codigoCupom : null,
     });
   } catch (error) {
     console.error("ERRO ASAAS:", error);
