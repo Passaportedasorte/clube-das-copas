@@ -1,6 +1,13 @@
 import { NextResponse } from "next/server";
 import { supabaseAdmin } from "@/lib/supabaseAdmin";
 
+export async function GET() {
+  return NextResponse.json({
+    ok: true,
+    message: "Webhook Asaas ativo",
+  });
+}
+
 export async function POST(req: Request) {
   try {
     const body = await req.json();
@@ -18,25 +25,27 @@ export async function POST(req: Request) {
     const paymentId = payment?.id;
 
     if (!paymentId) {
-      return NextResponse.json(
-        { error: "Payment ID não encontrado." },
-        { status: 400 }
-      );
+      console.log("Payment ID não encontrado no webhook.");
+
+      return NextResponse.json({ received: true });
     }
 
     const { data: subscription, error: subError } = await supabaseAdmin
       .from("subscriptions")
       .select("*")
       .eq("asaas_payment_id", paymentId)
-      .single();
+      .maybeSingle();
 
-    if (subError || !subscription) {
+    if (subError) {
+      console.log("Erro ao buscar assinatura:", subError);
+
+      return NextResponse.json({ received: true });
+    }
+
+    if (!subscription) {
       console.log("Assinatura não encontrada:", paymentId);
 
-      return NextResponse.json(
-        { error: "Assinatura não encontrada." },
-        { status: 404 }
-      );
+      return NextResponse.json({ received: true });
     }
 
     await supabaseAdmin
@@ -61,9 +70,6 @@ export async function POST(req: Request) {
   } catch (error) {
     console.error("ERRO WEBHOOK ASAAS:", error);
 
-    return NextResponse.json(
-      { error: "Erro no webhook." },
-      { status: 500 }
-    );
+    return NextResponse.json({ received: true });
   }
 }
