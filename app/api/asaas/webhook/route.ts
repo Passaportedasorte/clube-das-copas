@@ -15,12 +15,24 @@ export async function POST(req: Request) {
     const event = body.event;
     const payment = body.payment;
 
-    if (
-      event !== "PAYMENT_RECEIVED" &&
-      event !== "PAYMENT_CONFIRMED"
-    ) {
-      return NextResponse.json({ received: true });
-    }
+    const eventosAceitos = [
+  "PAYMENT_RECEIVED",
+  "PAYMENT_CONFIRMED",
+  "PAYMENT_APPROVED",
+];
+
+const statusAceitos = [
+  "RECEIVED",
+  "CONFIRMED",
+  "RECEIVED_IN_CASH",
+];
+
+if (
+  !eventosAceitos.includes(event) &&
+  !statusAceitos.includes(payment?.status)
+) {
+  return NextResponse.json({ received: true });
+}
 
     const paymentId = payment?.id;
 
