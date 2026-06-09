@@ -1,199 +1,220 @@
 export default function Home() {
   return (
-    <main className="min-h-screen bg-[#FAFAF7] text-[#111111]">
-      <section className="max-w-7xl mx-auto px-5 md:px-6 py-14 md:py-20">
-        <div className="text-center max-w-5xl mx-auto">
-          <span className="inline-flex items-center gap-2 bg-[#D4AF37]/20 text-[#0B6E4F] border border-[#D4AF37]/40 px-5 py-2 rounded-full font-black text-sm">
-            🏆 Clube Oficial da Copa do Mundo 2026
-          </span>
+    <main className="min-h-screen bg-[#063A2A] text-white overflow-hidden">
+      <section className="relative min-h-screen">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,#0B6E4F_0%,#063A2A_45%,#031D15_100%)]" />
+        <div className="absolute inset-0 bg-[linear-gradient(135deg,rgba(212,175,55,0.18)_0%,transparent_35%,rgba(244,211,94,0.12)_100%)]" />
+        <div className="absolute top-10 left-1/2 h-72 w-72 -translate-x-1/2 rounded-full bg-[#D4AF37]/20 blur-3xl" />
+        <div className="absolute bottom-0 left-0 right-0 h-48 bg-gradient-to-t from-[#031D15] to-transparent" />
 
-          <h1 className="mt-8 text-4xl md:text-7xl font-black leading-tight">
-            Dê seus palpites na Copa e concorra a
-            <span className="block text-[#0B6E4F]">
-              R$ 10.000 em prêmios
-            </span>
-          </h1>
-
-          <p className="max-w-3xl mx-auto mt-7 text-lg md:text-xl text-black/70 leading-relaxed">
-            Entre para o Clube das Copas, palpite nos jogos da Copa do Mundo
-            2026, acumule pontos no ranking e dispute a premiação final.
-          </p>
-
-          <div className="mt-8 inline-flex flex-col md:flex-row items-center justify-center gap-3 bg-white border rounded-3xl p-4 shadow-sm">
-            <div className="font-black text-[#0B6E4F]">
-              Placar exato: 10 pontos
+        <div className="relative max-w-7xl mx-auto px-5 md:px-6 py-16 md:py-24">
+          <div className="text-center max-w-5xl mx-auto">
+            <div className="mx-auto mb-8 flex h-28 w-28 items-center justify-center rounded-full border border-[#D4AF37]/40 bg-[#063A2A]/80 shadow-[0_0_60px_rgba(212,175,55,0.25)]">
+              <div className="text-center">
+                <div className="text-5xl">🏆</div>
+                <div className="mt-1 text-[10px] font-black tracking-[0.25em] text-[#D4AF37]">
+                  CDC
+                </div>
+              </div>
             </div>
 
-            <div className="hidden md:block text-black/20 font-black">|</div>
+            <span className="inline-flex items-center gap-2 bg-white/10 text-[#F4D35E] border border-[#D4AF37]/30 px-5 py-2 rounded-full font-black text-sm">
+              🏆 Campeonato de Palpites da Copa do Mundo 2026
+            </span>
 
-            <div className="font-black text-[#0B6E4F]">
-              Acertou vencedor ou empate: 3 pontos
+            <h1 className="mt-8 text-5xl md:text-8xl font-black leading-[0.95] tracking-tight">
+              A Copa começa antes da
+              <span className="block text-[#D4AF37]">
+                bola rolar.
+              </span>
+            </h1>
+
+            <p className="max-w-3xl mx-auto mt-7 text-lg md:text-2xl text-white/80 leading-relaxed">
+              Faça seus palpites, acumule pontos, suba no ranking e dispute
+              <strong className="text-[#F4D35E]"> R$ 10.000 em premiação</strong>.
+            </p>
+
+            <div className="mt-8 inline-flex flex-col md:flex-row items-center justify-center gap-3 bg-[#031D15]/70 border border-[#D4AF37]/25 rounded-3xl p-4 shadow-[0_0_40px_rgba(0,0,0,0.25)]">
+              <div className="font-black text-white">
+                Placar exato: <span className="text-[#D4AF37]">10 pontos</span>
+              </div>
+
+              <div className="hidden md:block text-white/20 font-black">|</div>
+
+              <div className="font-black text-white">
+                Vencedor ou empate: <span className="text-[#D4AF37]">3 pontos</span>
+              </div>
+            </div>
+
+            <div className="flex flex-col md:flex-row justify-center gap-4 mt-10">
+              <a
+                href="/cadastro"
+                className="bg-[#0B6E4F] hover:bg-[#0D8A63] transition text-white px-10 py-5 rounded-2xl font-black text-lg shadow-[0_0_35px_rgba(11,110,79,0.45)] border border-white/10"
+              >
+                Garanta sua vaga
+              </a>
+
+              <a
+                href="/premiacao"
+                className="border-2 border-[#D4AF37] text-white px-10 py-5 rounded-2xl font-black bg-white/5 hover:bg-white/10 transition"
+              >
+                Ver premiação
+              </a>
+            </div>
+
+            <p className="mt-5 text-sm text-white/55 font-semibold">
+              A Copa é do mundo. A disputa é nossa.
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-4 gap-5 mt-16 md:mt-24">
+            <div className="bg-[#063A2A]/90 border border-[#D4AF37]/30 rounded-3xl p-6 shadow-[inset_0_0_40px_rgba(212,175,55,0.06)]">
+              <p className="text-sm text-white/60 font-bold">Premiação</p>
+
+              <p className="text-4xl font-black mt-2 text-[#D4AF37]">
+                R$ 10.000
+              </p>
+
+              <p className="text-white/60 text-sm mt-2">
+                Em prêmios para os melhores colocados.
+              </p>
+            </div>
+
+            <div className="bg-[#063A2A]/90 border border-[#D4AF37]/20 rounded-3xl p-6">
+              <p className="text-sm text-white/60 font-bold">Assinatura</p>
+
+              <p className="text-4xl font-black mt-2 text-white">R$ 49,90</p>
+
+              <p className="text-white/60 text-sm mt-2">
+                Acesso ao clube durante toda a Copa.
+              </p>
+            </div>
+
+            <div className="bg-[#063A2A]/90 border border-[#D4AF37]/20 rounded-3xl p-6">
+              <p className="text-sm text-white/60 font-bold">Ranking</p>
+
+              <p className="text-4xl font-black text-[#D4AF37] mt-2">
+                Ao vivo
+              </p>
+
+              <p className="text-white/60 text-sm mt-2">
+                Atualização automática dos pontos.
+              </p>
+            </div>
+
+            <div className="bg-[#063A2A]/90 border border-[#D4AF37]/20 rounded-3xl p-6">
+              <p className="text-sm text-white/60 font-bold">Palpites</p>
+
+              <p className="text-4xl font-black text-white mt-2">
+                Copa toda
+              </p>
+
+              <p className="text-white/60 text-sm mt-2">
+                Da fase de grupos até a grande final.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="bg-[#031D15] px-5 md:px-6 py-20">
+        <div className="max-w-7xl mx-auto">
+          <div className="bg-[#063A2A] border border-[#D4AF37]/25 rounded-[2rem] p-8 md:p-16 text-white shadow-[0_0_60px_rgba(0,0,0,0.25)]">
+            <h2 className="text-4xl md:text-6xl font-black text-center">
+              Como funciona?
+            </h2>
+
+            <div className="grid md:grid-cols-4 gap-8 mt-12">
+              {[
+                ["01", "Entre para o clube"],
+                ["02", "Faça seus palpites"],
+                ["03", "Suba no ranking"],
+                ["04", "Dispute a taça"],
+              ].map((item) => (
+                <div key={item[0]} className="text-center">
+                  <div className="text-5xl font-black text-[#D4AF37]">
+                    {item[0]}
+                  </div>
+
+                  <p className="mt-3 font-bold text-white/90">
+                    {item[1]}
+                  </p>
+                </div>
+              ))}
             </div>
           </div>
 
-          <div className="flex flex-col md:flex-row justify-center gap-4 mt-10">
+          <div className="mt-20 md:mt-24">
+            <h2 className="text-4xl md:text-6xl font-black text-center">
+              Pontuação simples e transparente
+            </h2>
+
+            <div className="grid md:grid-cols-2 gap-6 mt-10">
+              <div className="bg-[#063A2A] border border-[#D4AF37]/25 rounded-3xl p-8 text-center">
+                <p className="text-7xl font-black text-[#D4AF37]">10</p>
+                <p className="mt-3 text-xl font-black">pontos</p>
+                <p className="text-white/60 mt-2">
+                  Para quem acertar o placar exato do jogo.
+                </p>
+              </div>
+
+              <div className="bg-[#063A2A] border border-[#D4AF37]/25 rounded-3xl p-8 text-center">
+                <p className="text-7xl font-black text-[#D4AF37]">3</p>
+                <p className="mt-3 text-xl font-black">pontos</p>
+                <p className="text-white/60 mt-2">
+                  Para quem acertar o vencedor ou o empate.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div className="mt-20 md:mt-24">
+            <h2 className="text-4xl md:text-6xl font-black text-center">
+              O que está incluso?
+            </h2>
+
+            <div className="grid md:grid-cols-2 gap-6 mt-12">
+              <div className="bg-[#063A2A] border border-[#D4AF37]/25 rounded-3xl p-8">
+                <ul className="space-y-5 font-medium text-white/85">
+                  <li>✅ Área exclusiva para membros</li>
+                  <li>✅ Sistema de palpites da Copa do Mundo</li>
+                  <li>✅ Ranking atualizado em tempo real</li>
+                  <li>✅ Histórico dos seus palpites</li>
+                </ul>
+              </div>
+
+              <div className="bg-[#063A2A] border border-[#D4AF37]/25 rounded-3xl p-8">
+                <ul className="space-y-5 font-medium text-white/85">
+                  <li>✅ Disputa de R$ 10.000 em premiação</li>
+                  <li>✅ Palpites da fase de grupos até a final</li>
+                  <li>✅ Pontuação automática após os resultados</li>
+                  <li>✅ Critérios de desempate transparentes</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <div className="mt-20 md:mt-24 text-center bg-[#063A2A] border border-[#D4AF37]/30 rounded-[2rem] p-8 md:p-14 shadow-[inset_0_0_50px_rgba(212,175,55,0.07)]">
+            <p className="text-[#D4AF37] font-black tracking-[0.25em] text-sm">
+              CLUBE DAS COPAS
+            </p>
+
+            <h2 className="mt-4 text-4xl md:text-6xl font-black">
+              Mostre que você entende de Copa.
+            </h2>
+
+            <p className="text-white/65 mt-4 max-w-2xl mx-auto">
+              Entre na competição, acompanhe sua posição no ranking e viva a Copa
+              do Mundo como protagonista.
+            </p>
+
             <a
               href="/cadastro"
-              className="bg-[#0B6E4F] hover:opacity-90 transition text-white px-10 py-5 rounded-2xl font-black text-lg shadow-lg"
+              className="inline-block mt-8 bg-[#0B6E4F] hover:bg-[#0D8A63] transition text-white px-10 py-4 rounded-2xl font-black border border-white/10"
             >
-              Quero concorrer aos R$ 10.000
-            </a>
-
-            <a
-              href="/premiacao"
-              className="border-2 border-[#0B6E4F] text-[#0B6E4F] px-10 py-5 rounded-2xl font-black bg-white"
-            >
-              Ver premiação
+              Participar agora
             </a>
           </div>
-
-          <p className="mt-4 text-sm text-black/50 font-semibold">
-            Assinatura única para participar durante toda a competição.
-          </p>
-        </div>
-
-        <div className="grid md:grid-cols-4 gap-5 mt-16 md:mt-20">
-          <div className="bg-[#0B6E4F] text-white border rounded-3xl p-6 shadow-sm">
-            <p className="text-sm text-white/70 font-bold">Premiação</p>
-
-            <p className="text-3xl font-black mt-2 text-[#D4AF37]">
-              R$ 10.000
-            </p>
-
-            <p className="text-white/70 text-sm mt-2">
-              Em prêmios para os melhores colocados.
-            </p>
-          </div>
-
-          <div className="bg-white border rounded-3xl p-6">
-            <p className="text-sm text-black/50 font-bold">Assinatura</p>
-
-            <p className="text-3xl font-black mt-2">R$ 49,90</p>
-
-            <p className="text-black/60 text-sm mt-2">
-              Acesso ao clube durante toda a Copa.
-            </p>
-          </div>
-
-          <div className="bg-white border rounded-3xl p-6">
-            <p className="text-sm text-black/50 font-bold">Ranking</p>
-
-            <p className="text-3xl font-black text-[#0B6E4F] mt-2">
-              Ao Vivo
-            </p>
-
-            <p className="text-black/60 text-sm mt-2">
-              Atualização automática dos pontos.
-            </p>
-          </div>
-
-          <div className="bg-white border rounded-3xl p-6">
-            <p className="text-sm text-black/50 font-bold">Palpites</p>
-
-            <p className="text-3xl font-black text-[#D4AF37] mt-2">
-  Copa toda
-</p>
-
-<p className="text-black/60 text-sm mt-2">
-  Palpites da fase de grupos até a grande final.
-</p>
-          </div>
-        </div>
-
-        <div className="mt-20 md:mt-24 bg-[#0B6E4F] rounded-[2rem] p-8 md:p-16 text-white">
-          <h2 className="text-4xl md:text-5xl font-black text-center">
-            Como funciona?
-          </h2>
-
-          <div className="grid md:grid-cols-4 gap-8 mt-12">
-            <div className="text-center">
-              <div className="text-5xl font-black text-[#D4AF37]">01</div>
-              <p className="mt-3 font-bold">Entre para o clube</p>
-            </div>
-
-            <div className="text-center">
-              <div className="text-5xl font-black text-[#D4AF37]">02</div>
-              <p className="mt-3 font-bold">Faça seus palpites</p>
-            </div>
-
-            <div className="text-center">
-              <div className="text-5xl font-black text-[#D4AF37]">03</div>
-              <p className="mt-3 font-bold">Acumule pontos</p>
-            </div>
-
-            <div className="text-center">
-              <div className="text-5xl font-black text-[#D4AF37]">04</div>
-              <p className="mt-3 font-bold">Concorra aos prêmios</p>
-            </div>
-          </div>
-        </div>
-
-        <div className="mt-20 md:mt-24">
-          <h2 className="text-4xl font-black text-center">
-            Pontuação simples e transparente
-          </h2>
-
-          <div className="grid md:grid-cols-2 gap-6 mt-10">
-            <div className="bg-white border rounded-3xl p-8 text-center">
-              <p className="text-6xl font-black text-[#0B6E4F]">10</p>
-              <p className="mt-3 text-xl font-black">pontos</p>
-              <p className="text-black/60 mt-2">
-                Para quem acertar o placar exato do jogo.
-              </p>
-            </div>
-
-            <div className="bg-white border rounded-3xl p-8 text-center">
-              <p className="text-6xl font-black text-[#D4AF37]">3</p>
-              <p className="mt-3 text-xl font-black">pontos</p>
-              <p className="text-black/60 mt-2">
-                Para quem acertar o vencedor ou o empate.
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <div className="mt-20 md:mt-24">
-          <h2 className="text-4xl font-black text-center">
-            O que está incluso na sua assinatura?
-          </h2>
-
-          <div className="grid md:grid-cols-2 gap-6 mt-12">
-            <div className="bg-white border rounded-3xl p-8">
-              <ul className="space-y-5 font-medium">
-                <li>✅ Área exclusiva para membros</li>
-                <li>✅ Sistema de palpites da Copa do Mundo</li>
-                <li>✅ Ranking atualizado em tempo real</li>
-                <li>✅ Histórico dos seus palpites</li>
-              </ul>
-            </div>
-
-            <div className="bg-white border rounded-3xl p-8">
-              <ul className="space-y-5 font-medium">
-                <li>✅ Participação na disputa de R$ 10.000 em prêmios</li>
-                <li>✅ Acompanhamento da Copa 2026</li>
-                <li>✅ Pontuação automática após os resultados</li>
-                <li>✅ Atualizações durante o torneio</li>
-              </ul>
-            </div>
-          </div>
-        </div>
-
-        <div className="mt-20 md:mt-24 text-center bg-white border rounded-[2rem] p-8 md:p-14">
-          <h2 className="text-4xl md:text-5xl font-black">
-            A Copa fica muito mais emocionante quando vale prêmio
-          </h2>
-
-          <p className="text-black/60 mt-4 max-w-2xl mx-auto">
-            Entre no Clube das Copas, faça seus palpites e acompanhe sua posição
-            no ranking até o final da competição.
-          </p>
-
-          <a
-            href="/cadastro"
-            className="inline-block mt-8 bg-[#0B6E4F] text-white px-10 py-4 rounded-2xl font-black"
-          >
-            Participar agora
-          </a>
         </div>
       </section>
     </main>
