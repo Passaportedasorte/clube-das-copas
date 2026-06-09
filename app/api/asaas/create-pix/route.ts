@@ -167,9 +167,16 @@ export async function POST(req: Request) {
     }
 
     if (cupomValido) {
-  await supabaseAdmin.rpc("increment_coupon_usage", {
-    coupon_code: codigoCupom,
-  });
+  const { error: couponUsageError } = await supabaseAdmin.rpc(
+    "increment_coupon_usage",
+    {
+      coupon_code: codigoCupom,
+    }
+  );
+
+  if (couponUsageError) {
+    console.log("ERRO AO CONTABILIZAR USO DO CUPOM:", couponUsageError);
+  }
 }
 
     return NextResponse.json({
