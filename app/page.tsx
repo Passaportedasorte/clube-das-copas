@@ -168,6 +168,101 @@ export default function Home() {
             </div>
           </div>
 
+
+<div className="mt-20 md:mt-24 bg-[#063A2A] border border-[#D4AF37]/25 rounded-[2rem] p-8 md:p-14">
+  <div className="grid md:grid-cols-[1.2fr_0.8fr] gap-10 items-center">
+    <div>
+      <p className="text-[#D4AF37] font-black tracking-[0.25em] text-sm">
+        LIGAS PRIVADAS
+      </p>
+
+      <h2 className="mt-4 text-4xl md:text-6xl font-black leading-tight">
+        Crie uma disputa só com seus amigos.
+      </h2>
+
+      <p className="text-white/65 mt-5 text-lg leading-relaxed">
+        Além de participar do Ranking Geral do Clube das Copas, você também pode
+        criar uma liga privada para competir com amigos, família, colegas de
+        trabalho ou aquele grupo que vive falando que entende de futebol.
+      </p>
+
+      <div className="grid md:grid-cols-2 gap-4 mt-8">
+        <div className="bg-[#031D15]/70 border border-[#D4AF37]/20 rounded-3xl p-5">
+          <p className="text-3xl">🏆</p>
+          <p className="font-black mt-3">
+            Ranking exclusivo
+          </p>
+          <p className="text-white/55 text-sm mt-2">
+            Veja quem está mandando melhor dentro da sua própria liga.
+          </p>
+        </div>
+
+        <div className="bg-[#031D15]/70 border border-[#D4AF37]/20 rounded-3xl p-5">
+          <p className="text-3xl">👥</p>
+          <p className="font-black mt-3">
+            Convite por código
+          </p>
+          <p className="text-white/55 text-sm mt-2">
+            Compartilhe o código e aprove quem pode entrar na disputa.
+          </p>
+        </div>
+      </div>
+
+      <a
+        href="/ligas"
+        className="inline-block mt-8 bg-[#0B6E4F] hover:bg-[#0D8A63] transition text-white px-10 py-4 rounded-2xl font-black border border-white/10"
+      >
+        Criar minha liga
+      </a>
+    </div>
+
+    <div className="bg-[#031D15]/80 border border-[#D4AF37]/25 rounded-[2rem] p-6 shadow-[inset_0_0_50px_rgba(212,175,55,0.06)]">
+      <div className="flex items-center justify-between border-b border-white/10 pb-4">
+        <div>
+          <p className="text-sm text-white/50 font-bold">
+            Liga exemplo
+          </p>
+          <p className="font-black text-2xl text-[#D4AF37]">
+            Amigos da Copa
+          </p>
+        </div>
+
+        <span className="text-4xl">🏆</span>
+      </div>
+
+      <div className="mt-5 space-y-4">
+        {[
+          ["#1", "brunocamisa10", "34 pts"],
+          ["#2", "leo13sports", "31 pts"],
+          ["#3", "jaque10", "27 pts"],
+        ].map((item) => (
+          <div
+            key={item[0]}
+            className="flex items-center justify-between bg-white/5 border border-white/10 rounded-2xl p-4"
+          >
+            <div className="flex items-center gap-3">
+              <span className="font-black text-[#D4AF37]">
+                {item[0]}
+              </span>
+
+              <span className="font-bold">
+                {item[1]}
+              </span>
+            </div>
+
+            <span className="font-black text-white/70">
+              {item[2]}
+            </span>
+          </div>
+        ))}
+      </div>
+
+      <p className="text-white/45 text-sm mt-5 text-center">
+        A disputa geral é por R$ 10.000. A rivalidade com os amigos é por orgulho.
+      </p>
+    </div>
+  </div>
+</div>
           <div className="mt-20 md:mt-24">
             <h2 className="text-4xl md:text-6xl font-black text-center">
               O que está incluso?
