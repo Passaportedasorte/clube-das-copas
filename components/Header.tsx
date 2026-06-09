@@ -7,6 +7,7 @@ export default function Header() {
   const [email, setEmail] = useState("");
   const [active, setActive] = useState(false);
   const [menuAberto, setMenuAberto] = useState(false);
+const [menuUsuarioAberto, setMenuUsuarioAberto] = useState(false);
 
   useEffect(() => {
     async function carregar() {
@@ -89,16 +90,39 @@ export default function Header() {
 
           {email ? (
             <>
-              <span className="max-w-[180px] truncate text-sm text-white/50">
-                {email}
-              </span>
+              <div className="relative">
+  <button
+    onClick={() => setMenuUsuarioAberto(!menuUsuarioAberto)}
+    className="max-w-[220px] truncate text-sm text-white/70 hover:text-white font-medium"
+  >
+    {email} ▾
+  </button>
 
-              <button
-                onClick={sair}
-                className="bg-white/10 hover:bg-white/15 text-white px-4 py-2 rounded-xl font-bold text-sm border border-white/10 transition"
-              >
-                Sair
-              </button>
+  {menuUsuarioAberto && (
+    <div className="absolute right-0 top-full mt-3 w-56 bg-[#063A2A] border border-[#D4AF37]/20 rounded-2xl shadow-xl overflow-hidden">
+      <a
+        href="/meus-dados"
+        className="block px-4 py-3 text-white hover:bg-white/10"
+      >
+        👤 Meus Dados
+      </a>
+
+      <a
+        href="/redefinir-senha"
+        className="block px-4 py-3 text-white hover:bg-white/10"
+      >
+        🔒 Redefinir Senha
+      </a>
+
+      <button
+        onClick={sair}
+        className="w-full text-left px-4 py-3 text-red-300 hover:bg-red-500/10"
+      >
+        🚪 Sair
+      </button>
+    </div>
+  )}
+</div>
             </>
           ) : (
             <div className="flex items-center gap-3">
@@ -144,16 +168,32 @@ export default function Header() {
 
             {email ? (
               <>
-                <span className="text-xs text-white/50 break-all px-1">
-                  {email}
-                </span>
+                <div className="bg-white/5 rounded-2xl border border-white/10 overflow-hidden">
+  <div className="px-4 py-3 text-xs text-white/50 break-all">
+    {email}
+  </div>
 
-                <button
-                  onClick={sair}
-                  className="bg-white/10 text-white px-4 py-3 rounded-xl font-bold text-sm text-left border border-white/10"
-                >
-                  Sair
-                </button>
+  <a
+    href="/meus-dados"
+    className="block px-4 py-3 text-white border-t border-white/10"
+  >
+    👤 Meus Dados
+  </a>
+
+  <a
+    href="/redefinir-senha"
+    className="block px-4 py-3 text-white border-t border-white/10"
+  >
+    🔒 Redefinir Senha
+  </a>
+
+  <button
+    onClick={sair}
+    className="w-full text-left px-4 py-3 text-red-300 border-t border-white/10"
+  >
+    🚪 Sair
+  </button>
+</div>
               </>
             ) : (
               <div className="grid grid-cols-2 gap-3">
