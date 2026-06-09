@@ -2,11 +2,10 @@
 
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
-import { bandeiras } from "@/lib/flags";
 
 export default function Jogos() {
   const [loading, setLoading] = useState(true);
-  const [liberado, setLiberado] = useState(false);
+  const [assinante, setAssinante] = useState(false);
   const [userId, setUserId] = useState("");
   const [matches, setMatches] = useState<any[]>([]);
   const [palpites, setPalpites] = useState<any>({});
@@ -21,8 +20,15 @@ export default function Jogos() {
     async function iniciar() {
       const { data: userData } = await supabase.auth.getUser();
 
+      const { data: jogos } = await supabase
+        .from("matches")
+        .select("*")
+        .order("match_date", { ascending: true });
+
+      setMatches(jogos || []);
+
       if (!userData.user) {
-        window.location.href = "/cadastro";
+        setLoading(false);
         return;
       }
 
@@ -34,19 +40,7 @@ export default function Jogos() {
         .eq("id", userData.user.id)
         .single();
 
-      if (!profile?.active) {
-        setLoading(false);
-        return;
-      }
-
-      setLiberado(true);
-
-      const { data: jogos } = await supabase
-        .from("matches")
-        .select("*")
-        .order("match_date", { ascending: true });
-
-      setMatches(jogos || []);
+      setAssinante(!!profile?.active);
 
       const { data: palpitesSalvos } = await supabase
         .from("predictions")
@@ -98,7 +92,7 @@ export default function Jogos() {
       );
 
       const posicao = rankingOrdenado.findIndex(
-        (item) => item.id === userData.user.id
+        (item) => item.id === userData.user?.id
       );
 
       setDashboard({
@@ -114,59 +108,59 @@ export default function Jogos() {
   }, []);
 
   function codigoBandeira(time: string) {
-  const mapa: Record<string, string> = {
-    "África do Sul": "za",
-    Alemanha: "de",
-    "Arábia Saudita": "sa",
-    Argélia: "dz",
-    Argentina: "ar",
-    Austrália: "au",
-    Áustria: "at",
-    Bélgica: "be",
-    "Bósnia e Herzegovina": "ba",
-    Brasil: "br",
-    "Cabo Verde": "cv",
-    Canadá: "ca",
-    Catar: "qa",
-    Colômbia: "co",
-    "Coreia do Sul": "kr",
-    "Costa do Marfim": "ci",
-    Croácia: "hr",
-    Curaçao: "cw",
-    Egito: "eg",
-    Equador: "ec",
-    Escócia: "gb-sct",
-    Espanha: "es",
-    "Estados Unidos": "us",
-    França: "fr",
-    Gana: "gh",
-    Haiti: "ht",
-    Holanda: "nl",
-    Inglaterra: "gb-eng",
-    Irã: "ir",
-    Iraque: "iq",
-    Japão: "jp",
-    Jordânia: "jo",
-    Marrocos: "ma",
-    México: "mx",
-    Noruega: "no",
-    "Nova Zelândia": "nz",
-    Panamá: "pa",
-    Paraguai: "py",
-    Portugal: "pt",
-    Suécia: "se",
-    Suíça: "ch",
-    Tunísia: "tn",
-    Turquia: "tr",
-    Uruguai: "uy",
-    Uzbequistão: "uz",
-"República Tcheca": "cz",
-Senegal: "sn",
-"República Democrática do Congo": "cd",
-  };
+    const mapa: Record<string, string> = {
+      "África do Sul": "za",
+      Alemanha: "de",
+      "Arábia Saudita": "sa",
+      Argélia: "dz",
+      Argentina: "ar",
+      Austrália: "au",
+      Áustria: "at",
+      Bélgica: "be",
+      "Bósnia e Herzegovina": "ba",
+      Brasil: "br",
+      "Cabo Verde": "cv",
+      Canadá: "ca",
+      Catar: "qa",
+      Colômbia: "co",
+      "Coreia do Sul": "kr",
+      "Costa do Marfim": "ci",
+      Croácia: "hr",
+      Curaçao: "cw",
+      Egito: "eg",
+      Equador: "ec",
+      Escócia: "gb-sct",
+      Espanha: "es",
+      "Estados Unidos": "us",
+      França: "fr",
+      Gana: "gh",
+      Haiti: "ht",
+      Holanda: "nl",
+      Inglaterra: "gb-eng",
+      Irã: "ir",
+      Iraque: "iq",
+      Japão: "jp",
+      Jordânia: "jo",
+      Marrocos: "ma",
+      México: "mx",
+      Noruega: "no",
+      "Nova Zelândia": "nz",
+      Panamá: "pa",
+      Paraguai: "py",
+      Portugal: "pt",
+      Suécia: "se",
+      Suíça: "ch",
+      Tunísia: "tn",
+      Turquia: "tr",
+      Uruguai: "uy",
+      Uzbequistão: "uz",
+      "República Tcheca": "cz",
+      Senegal: "sn",
+      "República Democrática do Congo": "cd",
+    };
 
-  return mapa[time?.trim()] || "";
-}
+    return mapa[time?.trim()] || "";
+  }
 
   function formatarDataHora(matchDate: string) {
     return new Date(matchDate).toLocaleString("pt-BR", {
@@ -198,6 +192,16 @@ Senegal: "sn",
   }
 
   async function salvarPalpites() {
+    if (!userId) {
+      window.location.href = "/cadastro";
+      return;
+    }
+
+    if (!assinante) {
+      window.location.href = "/pagamento";
+      return;
+    }
+
     const jogosLiberados = matches.filter(
       (match) => !palpiteBloqueado(match.match_date)
     );
@@ -211,7 +215,11 @@ Senegal: "sn",
         match_id: matchId,
         home_score: Number(palpite.home_score),
         away_score: Number(palpite.away_score),
-      }));
+      }))
+      .filter(
+        (item) =>
+          !Number.isNaN(item.home_score) && !Number.isNaN(item.away_score)
+      );
 
     if (registros.length === 0) {
       alert("Preencha pelo menos um palpite.");
@@ -260,27 +268,6 @@ Senegal: "sn",
     return <div className="p-10">Carregando...</div>;
   }
 
-  if (!liberado) {
-    return (
-      <main className="min-h-screen flex items-center justify-center bg-[#FAFAF7]">
-        <div className="bg-white border rounded-3xl p-8 text-center max-w-md">
-          <h1 className="text-3xl font-black">Acesso não liberado</h1>
-
-          <p className="mt-4 text-black/60">
-            Seu pagamento ainda não foi confirmado.
-          </p>
-
-          <a
-            href="/pagamento"
-            className="inline-block mt-6 bg-[#0B6E4F] text-white px-6 py-3 rounded-2xl font-black"
-          >
-            Finalizar assinatura
-          </a>
-        </div>
-      </main>
-    );
-  }
-
   return (
     <main className="min-h-screen bg-[#FAFAF7] text-[#111111] px-6 py-10">
       <div className="max-w-6xl mx-auto">
@@ -290,13 +277,34 @@ Senegal: "sn",
           </p>
 
           <h1 className="text-5xl font-black mt-3 text-[#063F2F]">
-            Meus Palpites
+            Palpites
           </h1>
 
           <p className="text-black/60 mt-2 text-lg">
-            Preencha seus palpites para os jogos da Copa.
+            Veja os jogos da Copa e faça seus palpites para disputar o ranking.
           </p>
         </div>
+
+        {!assinante && (
+          <div className="mt-8 bg-[#D4AF37]/15 border border-[#D4AF37]/40 rounded-3xl p-6 text-center">
+            <h2 className="text-2xl font-black text-[#063F2F]">
+              Libere seus palpites
+            </h2>
+
+            <p className="text-black/70 mt-2 max-w-2xl mx-auto">
+              Você pode visualizar todos os jogos. Para preencher, salvar seus
+              palpites e participar do ranking valendo R$ 10.000 em premiação,
+              ative sua assinatura.
+            </p>
+
+            <a
+              href={userId ? "/pagamento" : "/cadastro"}
+              className="inline-block mt-5 bg-[#0B6E4F] text-white px-8 py-4 rounded-2xl font-black"
+            >
+              {userId ? "Liberar meus palpites" : "Criar conta e participar"}
+            </a>
+          </div>
+        )}
 
         <div className="grid md:grid-cols-3 gap-4 mt-10">
           <div className="bg-white border rounded-3xl p-6 shadow-sm">
@@ -372,7 +380,9 @@ Senegal: "sn",
                                   <div className="flex items-center justify-center md:justify-start gap-3">
                                     {codigoBandeira(match.home_team) ? (
                                       <img
-  src={`https://flagcdn.com/w80/${codigoBandeira(match.home_team)}.png`}
+                                        src={`https://flagcdn.com/w80/${codigoBandeira(
+                                          match.home_team
+                                        )}.png`}
                                         alt={match.home_team}
                                         className="w-10 md:w-12 h-7 md:h-8 object-cover rounded shadow-sm"
                                       />
@@ -389,9 +399,10 @@ Senegal: "sn",
                                     <input
                                       type="number"
                                       min="0"
-                                      disabled={palpiteBloqueado(
-                                        match.match_date
-                                      )}
+                                      disabled={
+                                        !assinante ||
+                                        palpiteBloqueado(match.match_date)
+                                      }
                                       value={
                                         palpites[match.id]?.home_score || ""
                                       }
@@ -412,9 +423,10 @@ Senegal: "sn",
                                     <input
                                       type="number"
                                       min="0"
-                                      disabled={palpiteBloqueado(
-                                        match.match_date
-                                      )}
+                                      disabled={
+                                        !assinante ||
+                                        palpiteBloqueado(match.match_date)
+                                      }
                                       value={
                                         palpites[match.id]?.away_score || ""
                                       }
@@ -436,7 +448,9 @@ Senegal: "sn",
 
                                     {codigoBandeira(match.away_team) ? (
                                       <img
-  src={`https://flagcdn.com/w80/${codigoBandeira(match.away_team)}.png`}
+                                        src={`https://flagcdn.com/w80/${codigoBandeira(
+                                          match.away_team
+                                        )}.png`}
                                         alt={match.away_team}
                                         className="w-10 md:w-12 h-7 md:h-8 object-cover rounded shadow-sm"
                                       />
@@ -451,7 +465,20 @@ Senegal: "sn",
                                     {formatarDataHora(match.match_date)}
                                   </p>
 
-                                  {palpiteBloqueado(match.match_date) ? (
+                                  {!assinante ? (
+                                    <div className="mt-3">
+                                      <p className="text-[#D4AF37] font-black text-sm">
+                                        🔒 Assine para salvar seus palpites
+                                      </p>
+
+                                      <a
+                                        href={userId ? "/pagamento" : "/cadastro"}
+                                        className="inline-block mt-3 bg-[#0B6E4F] text-white px-5 py-3 rounded-2xl font-black text-sm"
+                                      >
+                                        Liberar palpites
+                                      </a>
+                                    </div>
+                                  ) : palpiteBloqueado(match.match_date) ? (
                                     <p className="text-red-600 font-bold text-sm mt-2">
                                       🔒 Palpites encerrados para este jogo
                                     </p>
@@ -475,12 +502,21 @@ Senegal: "sn",
           })}
         </div>
 
-        <button
-          onClick={salvarPalpites}
-          className="w-full bg-[#0B6E4F] text-white rounded-2xl py-4 font-black mt-10"
-        >
-          Salvar Palpites
-        </button>
+        {assinante ? (
+          <button
+            onClick={salvarPalpites}
+            className="w-full bg-[#0B6E4F] text-white rounded-2xl py-4 font-black mt-10"
+          >
+            Salvar Palpites
+          </button>
+        ) : (
+          <a
+            href={userId ? "/pagamento" : "/cadastro"}
+            className="block text-center w-full bg-[#0B6E4F] text-white rounded-2xl py-4 font-black mt-10"
+          >
+            {userId ? "Liberar meus palpites" : "Criar conta e participar"}
+          </a>
+        )}
       </div>
     </main>
   );
