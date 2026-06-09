@@ -12,6 +12,9 @@ export async function POST(req: Request) {
     const email = body.email;
     const cpf = body.cpf;
     const userId = body.userId;
+    const couponCodeBody = String(body.couponCode || "")
+  .trim()
+  .toUpperCase();
 
     const valorOriginal = 49.9;
 
@@ -35,9 +38,9 @@ export async function POST(req: Request) {
       .eq("id", userId)
       .single();
 
-    const codigoCupom = String(profile?.referred_by || "")
-      .trim()
-      .toUpperCase();
+    const codigoCupom = couponCodeBody || String(profile?.referred_by || "")
+  .trim()
+  .toUpperCase();
 
     let valorFinal = valorOriginal;
     let desconto = 0;
@@ -56,6 +59,10 @@ export async function POST(req: Request) {
         cupom && (!cupom.max_uses || cupom.uses_count < cupom.max_uses);
 
       if (cupomDentroDoLimite) {
+        await supabaseAdmin
+  .from("profiles")
+  .update({ referred_by: codigoCupom })
+  .eq("id", userId);
         percentualDesconto = Number(cupom.discount_percent || 0);
         desconto = Number(
           ((valorOriginal * percentualDesconto) / 100).toFixed(2)

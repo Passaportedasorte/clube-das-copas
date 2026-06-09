@@ -112,7 +112,7 @@ export default function Cadastro() {
       whatsapp,
       data_nascimento: dataNascimento,
       referral_code: username,
-  referred_by: referralCode || null,
+  referred_by: referralCode ? referralCode.toUpperCase() : null,
 });
   
 

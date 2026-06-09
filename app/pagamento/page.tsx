@@ -8,6 +8,7 @@ export default function Pagamento() {
   const [pix, setPix] = useState<any>(null);
   const [erro, setErro] = useState("");
   const [profile, setProfile] = useState<any>(null);
+  const [couponCode, setCouponCode] = useState("");
 
   useEffect(() => {
     async function carregarUsuario() {
@@ -56,6 +57,7 @@ async function copiarPix() {
   nome: profile.nome,
   email: profile.email || "",
   cpf: profile.cpf,
+  couponCode,
 }),
     });
 
@@ -101,6 +103,28 @@ const intervalo = setInterval(async () => {
           Gere seu PIX para liberar o acesso ao Clube das Copas.
         </p>
 
+<div className="mt-6 text-left">
+  <label className="text-sm font-black text-black">
+    Cupom de desconto
+  </label>
+
+  <input
+    value={couponCode}
+    onChange={(e) =>
+      setCouponCode(
+        e.target.value
+          .trim()
+          .toUpperCase()
+      )
+    }
+    placeholder="Digite seu cupom, se tiver"
+    className="w-full mt-2 border rounded-2xl px-4 py-4 bg-white text-black placeholder:text-black/40"
+  />
+
+  <p className="text-xs text-black/50 mt-2">
+    Se você recebeu um cupom, informe antes de gerar o PIX.
+  </p>
+</div>
         <button
           onClick={gerarPix}
           disabled={loading || !profile}
