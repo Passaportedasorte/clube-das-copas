@@ -66,7 +66,7 @@ export default function Footer() {
 
             <div className="flex flex-col gap-3 text-sm">
               <a
-                href="https://chat.whatsapp.com/IHe3sQJi7Af69b9dYp1FL1?mode=gi_t"
+                href="https://chat.whatsapp.com/F9s4LyigPHCIz9ebWMWASV?mode=gi_t"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-white/60 hover:text-[#D4AF37]"
