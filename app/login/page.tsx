@@ -36,20 +36,7 @@ export default function Login() {
         <h1 className="text-4xl font-black text-center text-black">
           Entrar
         </h1>
-<button
-  type="submit"
-  disabled={loading}
-  className="w-full bg-[#0B6E4F] text-white py-4 rounded-2xl font-black disabled:opacity-60"
->
-  {loading ? "Entrando..." : "Entrar"}
-</button>
 
-<a
-  href="/recuperar-senha"
-  className="block text-center mt-4 text-sm font-bold text-[#0B6E4F] hover:underline"
->
-  Esqueci minha senha
-</a>
         <p className="text-gray-600 text-center mt-3">
           Acesse sua conta no Clube das Copas.
         </p>
@@ -80,6 +67,13 @@ export default function Login() {
           >
             {loading ? "Entrando..." : "Entrar"}
           </button>
+
+          <a
+            href="/recuperar-senha"
+            className="block text-center text-sm font-bold text-[#0B6E4F] hover:underline"
+          >
+            Esqueci minha senha
+          </a>
         </div>
 
         <p className="text-center text-sm text-black/60 mt-6">
