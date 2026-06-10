@@ -6,6 +6,7 @@ import { supabase } from "@/lib/supabase";
 export default function Pagamento() {
   const [loading, setLoading] = useState(false);
   const [pix, setPix] = useState<any>(null);
+const [metodoPagamento, setMetodoPagamento] = useState("pix");
   const [erro, setErro] = useState("");
   const [profile, setProfile] = useState<any>(null);
   const [couponCode, setCouponCode] = useState("");
@@ -52,7 +53,7 @@ async function copiarPix() {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({
+     body: JSON.stringify({
   userId: profile.id,
   nome: profile.nome,
   email: profile.email || "",
@@ -90,6 +91,39 @@ const intervalo = setInterval(async () => {
 }, 3000);
   }
 
+  async function gerarCartao() {
+  if (!profile) {
+    setErro("Dados do usuário não encontrados.");
+    return;
+  }
+
+  setLoading(true);
+  setErro("");
+
+  const response = await fetch("/api/asaas/create-card", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      userId: profile.id,
+      nome: profile.nome,
+      email: profile.email || "",
+      cpf: profile.cpf,
+      couponCode,
+    }),
+  });
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    setErro(data.error || "Erro ao gerar pagamento no cartão.");
+    setLoading(false);
+    return;
+  }
+
+  window.location.href = data.invoiceUrl;
+}
   return (
     <main className="min-h-screen bg-[#FAFAF7] flex items-center justify-center px-6 py-10">
       <div className="bg-white rounded-3xl border p-8 max-w-md w-full text-center">
@@ -125,13 +159,62 @@ const intervalo = setInterval(async () => {
     Se você recebeu um cupom, informe antes de gerar o PIX.
   </p>
 </div>
-        <button
-          onClick={gerarPix}
-          disabled={loading || !profile}
-          className="w-full bg-[#0B6E4F] text-white rounded-2xl py-4 font-black mt-8 disabled:opacity-60"
-        >
-          {loading ? "Gerando PIX..." : "Gerar PIX"}
-        </button>
+
+<div className="mt-6 text-left">
+  <label className="text-sm font-black text-black">
+    Cupom de desconto
+  </label>
+
+  <input
+    value={couponCode}
+    onChange={(e) => setCouponCode(e.target.value.trim().toUpperCase())}
+    placeholder="Digite seu cupom, se tiver"
+    className="w-full mt-2 border rounded-2xl px-4 py-4 bg-white text-black placeholder:text-black/40"
+  />
+</div>
+
+<div className="grid grid-cols-2 gap-3 mt-5">
+  <button
+    type="button"
+    onClick={() => setMetodoPagamento("pix")}
+    className={`rounded-2xl py-4 font-black border ${
+      metodoPagamento === "pix"
+        ? "bg-[#0B6E4F] text-white border-[#0B6E4F]"
+        : "bg-white text-black border-black/10"
+    }`}
+  >
+    PIX
+  </button>
+
+  <button
+    type="button"
+    onClick={() => setMetodoPagamento("cartao")}
+    className={`rounded-2xl py-4 font-black border ${
+      metodoPagamento === "cartao"
+        ? "bg-[#0B6E4F] text-white border-[#0B6E4F]"
+        : "bg-white text-black border-black/10"
+    }`}
+  >
+    Cartão
+  </button>
+</div>
+        {metodoPagamento === "pix" ? (
+  <button
+    onClick={gerarPix}
+    disabled={loading || !profile}
+    className="w-full bg-[#0B6E4F] text-white rounded-2xl py-4 font-black mt-8 disabled:opacity-60"
+  >
+    {loading ? "Gerando PIX..." : "Gerar PIX"}
+  </button>
+) : (
+  <button
+    onClick={gerarCartao}
+    disabled={loading || !profile}
+    className="w-full bg-[#0B6E4F] text-white rounded-2xl py-4 font-black mt-8 disabled:opacity-60"
+  >
+    {loading ? "Gerando cobrança..." : "Pagar com cartão"}
+  </button>
+)}
 
         {erro && (
           <div className="mt-5 bg-red-50 text-red-700 border border-red-200 rounded-2xl p-4 text-sm font-bold">
