@@ -39,13 +39,25 @@ export default function Pagamento() {
     alert("PIX Copia e Cola copiado!");
   }
 
+  function trackInitiateCheckout(metodo: "pix" | "cartao") {
+  if (typeof window !== "undefined" && (window as any).fbq) {
+    (window as any).fbq("track", "InitiateCheckout", {
+      value: 49.9,
+      currency: "BRL",
+      payment_method: metodo,
+      coupon: couponCode || null,
+    });
+  }
+}
   async function gerarPix() {
     if (!profile) {
-      setErro("Dados do usuário não encontrados.");
-      return;
-    }
+  setErro("Dados do usuário não encontrados.");
+  return;
+}
 
-    setLoading(true);
+trackInitiateCheckout("pix");
+
+setLoading(true);
     setErro("");
 
     const response = await fetch("/api/asaas/create-pix", {
@@ -93,11 +105,13 @@ export default function Pagamento() {
 
   async function gerarCartao() {
     if (!profile) {
-      setErro("Dados do usuário não encontrados.");
-      return;
-    }
+  setErro("Dados do usuário não encontrados.");
+  return;
+}
 
-    setLoading(true);
+trackInitiateCheckout("cartao");
+
+setLoading(true);
     setErro("");
 
     const response = await fetch("/api/asaas/create-card", {
