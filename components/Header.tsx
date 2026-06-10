@@ -70,9 +70,13 @@ const [menuUsuarioAberto, setMenuUsuarioAberto] = useState(false);
         </button>
 
         <div className="hidden md:flex items-center gap-6">
-          <a href="/jogos" className={linkClass}>
-            Palpites
-          </a>
+          <a href="/partidas" className={linkClass}>
+  Jogos
+</a>
+
+<a href="/jogos" className={linkClass}>
+  Palpites
+</a>
 
           <a href="/ranking" className={linkClass}>
             Ranking
@@ -148,10 +152,13 @@ const [menuUsuarioAberto, setMenuUsuarioAberto] = useState(false);
       {menuAberto && (
         <div className="md:hidden bg-[#031D15] border-t border-[#D4AF37]/20 px-4 pb-5 shadow-lg">
           <div className="flex flex-col gap-3 pt-4">
-            <a href="/jogos" className={mobileLinkClass}>
-              Palpites
-            </a>
+            <a href="/partidas" className={mobileLinkClass}>
+  Jogos
+</a>
 
+<a href="/jogos" className={mobileLinkClass}>
+  Palpites
+</a>
             <a href="/ranking" className={mobileLinkClass}>
               Ranking
             </a>
@@ -159,7 +166,6 @@ const [menuUsuarioAberto, setMenuUsuarioAberto] = useState(false);
 <a href="/ligas" className={mobileLinkClass}>
   Ligas
 </a>
-
             <a href="/premiacao" className={mobileLinkClass}>
               Premiação
             </a>
