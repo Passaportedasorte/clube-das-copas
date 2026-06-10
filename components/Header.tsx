@@ -156,6 +156,9 @@ const [menuUsuarioAberto, setMenuUsuarioAberto] = useState(false);
               Ranking
             </a>
 
+<a href="/ligas" className={mobileLinkClass}>
+  Ligas
+</a>
 
             <a href="/premiacao" className={mobileLinkClass}>
               Premiação
