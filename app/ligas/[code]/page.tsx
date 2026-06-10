@@ -95,15 +95,16 @@ export default function LigaDetalhePage() {
         ).length;
 
         return {
-          id: membro.user_id,
-          nome:
-            membro.profiles?.username ||
-            membro.profiles?.nome ||
-            "Participante",
-          pontos,
-          placaresExatos,
-          acertosResultado,
-        };
+  id: membro.user_id,
+  memberId: membro.id,
+  nome:
+    membro.profiles?.username ||
+    membro.profiles?.nome ||
+    "Participante",
+  pontos,
+  placaresExatos,
+  acertosResultado,
+};
       })
     );
 
@@ -128,14 +129,14 @@ export default function LigaDetalhePage() {
     const { data } = await supabase
       .from("league_members")
       .select(`
-        id,
-        user_id,
-        profiles (
-          nome,
-          username,
-          email
-        )
-      `)
+  id,
+  user_id,
+  profiles (
+    id,
+    nome,
+    username
+  )
+`)
       .eq("league_id", leagueId)
       .eq("status", "pending");
 
@@ -159,6 +160,19 @@ export default function LigaDetalhePage() {
 
     await carregar();
   }
+
+async function remover(memberId: string) {
+  const confirmar = confirm("Tem certeza que deseja remover este participante da liga?");
+
+  if (!confirmar) return;
+
+  await supabase
+    .from("league_members")
+    .delete()
+    .eq("id", memberId);
+
+  await carregar();
+}
 
   async function copiarCodigo() {
     await navigator.clipboard.writeText(liga.code);
@@ -357,9 +371,18 @@ export default function LigaDetalhePage() {
                     </p>
 
                     <p className="text-xs text-black/50 mt-1">
-                      Exatos: {item.placaresExatos} • Resultado:{" "}
-                      {item.acertosResultado}
-                    </p>
+  Exatos: {item.placaresExatos} • Resultado:{" "}
+  {item.acertosResultado}
+</p>
+
+{souDono && item.id !== userId && (
+  <button
+    onClick={() => remover(item.memberId)}
+    className="mt-2 text-xs font-black text-red-600 hover:underline"
+  >
+    Remover da liga
+  </button>
+)}
                   </div>
                 </div>
 
