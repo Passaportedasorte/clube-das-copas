@@ -6,7 +6,7 @@ import { supabase } from "@/lib/supabase";
 export default function Pagamento() {
   const [loading, setLoading] = useState(false);
   const [pix, setPix] = useState<any>(null);
-const [metodoPagamento, setMetodoPagamento] = useState("pix");
+  const [metodoPagamento, setMetodoPagamento] = useState("pix");
   const [erro, setErro] = useState("");
   const [profile, setProfile] = useState<any>(null);
   const [couponCode, setCouponCode] = useState("");
@@ -32,12 +32,12 @@ const [metodoPagamento, setMetodoPagamento] = useState("pix");
     carregarUsuario();
   }, []);
 
-async function copiarPix() {
-  if (!pix?.payload) return;
+  async function copiarPix() {
+    if (!pix?.payload) return;
 
-  await navigator.clipboard.writeText(pix.payload);
-  alert("PIX Copia e Cola copiado!");
-}
+    await navigator.clipboard.writeText(pix.payload);
+    alert("PIX Copia e Cola copiado!");
+  }
 
   async function gerarPix() {
     if (!profile) {
@@ -53,13 +53,13 @@ async function copiarPix() {
       headers: {
         "Content-Type": "application/json",
       },
-     body: JSON.stringify({
-  userId: profile.id,
-  nome: profile.nome,
-  email: profile.email || "",
-  cpf: profile.cpf,
-  couponCode,
-}),
+      body: JSON.stringify({
+        userId: profile.id,
+        nome: profile.nome,
+        email: profile.email || "",
+        cpf: profile.cpf,
+        couponCode,
+      }),
     });
 
     const data = await response.json();
@@ -71,59 +71,60 @@ async function copiarPix() {
     }
 
     setPix(data);
-setLoading(false);
+    setLoading(false);
 
-const intervalo = setInterval(async () => {
-  const { data: userData } = await supabase.auth.getUser();
+    const intervalo = setInterval(async () => {
+      const { data: userData } = await supabase.auth.getUser();
 
-  if (!userData.user) return;
+      if (!userData.user) return;
 
-  const { data: profileAtualizado } = await supabase
-    .from("profiles")
-    .select("active")
-    .eq("id", userData.user.id)
-    .single();
+      const { data: profileAtualizado } = await supabase
+        .from("profiles")
+        .select("active")
+        .eq("id", userData.user.id)
+        .single();
 
-  if (profileAtualizado?.active) {
-    clearInterval(intervalo);
-    window.location.href = "/jogos";
-  }
-}, 3000);
+      if (profileAtualizado?.active) {
+        clearInterval(intervalo);
+        window.location.href = "/jogos";
+      }
+    }, 3000);
   }
 
   async function gerarCartao() {
-  if (!profile) {
-    setErro("Dados do usuário não encontrados.");
-    return;
+    if (!profile) {
+      setErro("Dados do usuário não encontrados.");
+      return;
+    }
+
+    setLoading(true);
+    setErro("");
+
+    const response = await fetch("/api/asaas/create-card", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        userId: profile.id,
+        nome: profile.nome,
+        email: profile.email || "",
+        cpf: profile.cpf,
+        couponCode,
+      }),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      setErro(data.error || "Erro ao gerar pagamento no cartão.");
+      setLoading(false);
+      return;
+    }
+
+    window.location.href = data.invoiceUrl;
   }
 
-  setLoading(true);
-  setErro("");
-
-  const response = await fetch("/api/asaas/create-card", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      userId: profile.id,
-      nome: profile.nome,
-      email: profile.email || "",
-      cpf: profile.cpf,
-      couponCode,
-    }),
-  });
-
-  const data = await response.json();
-
-  if (!response.ok) {
-    setErro(data.error || "Erro ao gerar pagamento no cartão.");
-    setLoading(false);
-    return;
-  }
-
-  window.location.href = data.invoiceUrl;
-}
   return (
     <main className="min-h-screen bg-[#FAFAF7] flex items-center justify-center px-6 py-10">
       <div className="bg-white rounded-3xl border p-8 max-w-md w-full text-center">
@@ -131,90 +132,82 @@ const intervalo = setInterval(async () => {
           CLUBE DAS COPAS 2026
         </p>
 
-        <h1 className="text-3xl font-black mt-3">Finalizar inscrição</h1>
+        <h1 className="text-3xl font-black mt-3">
+          Finalizar inscrição
+        </h1>
 
         <p className="text-black/60 mt-3">
-          Gere seu PIX para liberar o acesso ao Clube das Copas.
+          Escolha a forma de pagamento para liberar seu acesso.
         </p>
 
-<div className="mt-6 text-left">
-  <label className="text-sm font-black text-black">
-    Cupom de desconto
-  </label>
+        <div className="mt-6 text-left">
+          <label className="text-sm font-black text-black">
+            Cupom de desconto
+          </label>
 
-  <input
-    value={couponCode}
-    onChange={(e) =>
-      setCouponCode(
-        e.target.value
-          .trim()
-          .toUpperCase()
-      )
-    }
-    placeholder="Digite seu cupom, se tiver"
-    className="w-full mt-2 border rounded-2xl px-4 py-4 bg-white text-black placeholder:text-black/40"
-  />
+          <input
+            value={couponCode}
+            onChange={(e) =>
+              setCouponCode(e.target.value.trim().toUpperCase())
+            }
+            placeholder="Digite seu cupom, se tiver"
+            className="w-full mt-2 border rounded-2xl px-4 py-4 bg-white text-black placeholder:text-black/40"
+          />
 
-  <p className="text-xs text-black/50 mt-2">
-    Se você recebeu um cupom, informe antes de gerar o PIX.
-  </p>
-</div>
+          <p className="text-xs text-black/50 mt-2">
+            Se você recebeu um cupom, informe antes de gerar o pagamento.
+          </p>
+        </div>
 
-<div className="mt-6 text-left">
-  <label className="text-sm font-black text-black">
-    Cupom de desconto
-  </label>
+        <div className="grid grid-cols-2 gap-3 mt-5">
+          <button
+            type="button"
+            onClick={() => {
+              setMetodoPagamento("pix");
+              setPix(null);
+            }}
+            className={`rounded-2xl py-4 font-black border ${
+              metodoPagamento === "pix"
+                ? "bg-[#0B6E4F] text-white border-[#0B6E4F]"
+                : "bg-white text-black border-black/10"
+            }`}
+          >
+            PIX
+          </button>
 
-  <input
-    value={couponCode}
-    onChange={(e) => setCouponCode(e.target.value.trim().toUpperCase())}
-    placeholder="Digite seu cupom, se tiver"
-    className="w-full mt-2 border rounded-2xl px-4 py-4 bg-white text-black placeholder:text-black/40"
-  />
-</div>
+          <button
+            type="button"
+            onClick={() => {
+              setMetodoPagamento("cartao");
+              setPix(null);
+            }}
+            className={`rounded-2xl py-4 font-black border ${
+              metodoPagamento === "cartao"
+                ? "bg-[#0B6E4F] text-white border-[#0B6E4F]"
+                : "bg-white text-black border-black/10"
+            }`}
+          >
+            Cartão
+          </button>
+        </div>
 
-<div className="grid grid-cols-2 gap-3 mt-5">
-  <button
-    type="button"
-    onClick={() => setMetodoPagamento("pix")}
-    className={`rounded-2xl py-4 font-black border ${
-      metodoPagamento === "pix"
-        ? "bg-[#0B6E4F] text-white border-[#0B6E4F]"
-        : "bg-white text-black border-black/10"
-    }`}
-  >
-    PIX
-  </button>
-
-  <button
-    type="button"
-    onClick={() => setMetodoPagamento("cartao")}
-    className={`rounded-2xl py-4 font-black border ${
-      metodoPagamento === "cartao"
-        ? "bg-[#0B6E4F] text-white border-[#0B6E4F]"
-        : "bg-white text-black border-black/10"
-    }`}
-  >
-    Cartão
-  </button>
-</div>
         {metodoPagamento === "pix" ? (
-  <button
-    onClick={gerarPix}
-    disabled={loading || !profile}
-    className="w-full bg-[#0B6E4F] text-white rounded-2xl py-4 font-black mt-8 disabled:opacity-60"
-  >
-    {loading ? "Gerando PIX..." : "Gerar PIX"}
-  </button>
-) : (
-  <button
-    onClick={gerarCartao}
-    disabled={loading || !profile}
-    className="w-full bg-[#0B6E4F] text-white rounded-2xl py-4 font-black mt-8 disabled:opacity-60"
-  >
-    {loading ? "Gerando cobrança..." : "Pagar com cartão"}
-  </button>
-)}
+          <button
+            onClick={gerarPix}
+            disabled={loading || !profile}
+            className="w-full bg-[#0B6E4F] text-white rounded-2xl py-4 font-black mt-8 disabled:opacity-60"
+          >
+            {loading ? "Gerando PIX..." : "Gerar PIX"}
+          </button>
+        ) : (
+          <button
+            onClick={gerarCartao}
+            disabled={loading || !profile}
+            className="w-full bg-[#0B6E4F] text-white rounded-2xl py-4 font-black mt-8 disabled:opacity-60"
+          >
+            {loading ? "Gerando cobrança..." : "Pagar com cartão"}
+          </button>
+        )}
 
         {erro && (
           <div className="mt-5 bg-red-50 text-red-700 border border-red-200 rounded-2xl p-4 text-sm font-bold">
@@ -222,24 +215,25 @@ const intervalo = setInterval(async () => {
           </div>
         )}
 
-        {pix && (
-  <div className="mt-8">
-    <div className="mb-5 bg-[#FAFAF7] border rounded-2xl p-4">
-      <p className="text-sm text-black/50 font-bold">
-        Valor da inscrição
-      </p>
+        {pix && metodoPagamento === "pix" && (
+          <div className="mt-8">
+            <div className="mb-5 bg-[#FAFAF7] border rounded-2xl p-4">
+              <p className="text-sm text-black/50 font-bold">
+                Valor da inscrição
+              </p>
 
-      <p className="text-3xl font-black text-[#0B6E4F] mt-1">
-        R$ {Number(pix.valor || 49.9).toFixed(2).replace(".", ",")}
-      </p>
+              <p className="text-3xl font-black text-[#0B6E4F] mt-1">
+                R$ {Number(pix.valor || 49.9).toFixed(2).replace(".", ",")}
+              </p>
 
-      {pix.cupomValido && (
-        <p className="text-sm font-bold text-[#D4AF37] mt-2">
-          Cupom aplicado: {pix.referralCode} •{" "}
-          {pix.percentualDesconto}% de desconto
-        </p>
-      )}
-    </div>
+              {pix.cupomValido && (
+                <p className="text-sm font-bold text-[#D4AF37] mt-2">
+                  Cupom aplicado: {pix.referralCode} •{" "}
+                  {pix.percentualDesconto}% de desconto
+                </p>
+              )}
+            </div>
+
             <img
               src={`data:image/png;base64,${pix.encodedImage}`}
               alt="QR Code PIX"
@@ -247,25 +241,25 @@ const intervalo = setInterval(async () => {
             />
 
             <div className="mt-5 text-left">
-  <p className="text-sm font-black text-black mb-2">
-    PIX Copia e Cola
-  </p>
+              <p className="text-sm font-black text-black mb-2">
+                PIX Copia e Cola
+              </p>
 
-  <textarea
-    readOnly
-    value={pix.payload}
-    className="w-full border border-black/20 rounded-2xl p-3 text-xs bg-white text-black placeholder:text-black/40"
-    rows={4}
-  />
-</div>
+              <textarea
+                readOnly
+                value={pix.payload}
+                className="w-full border border-black/20 rounded-2xl p-3 text-xs bg-white text-black placeholder:text-black/40"
+                rows={4}
+              />
+            </div>
 
             <button
-  type="button"
-  onClick={copiarPix}
-  className="w-full mt-4 bg-[#0B6E4F] text-white rounded-2xl py-4 font-black"
->
-  Copiar PIX Copia e Cola
-</button>
+              type="button"
+              onClick={copiarPix}
+              className="w-full mt-4 bg-[#0B6E4F] text-white rounded-2xl py-4 font-black"
+            >
+              Copiar PIX Copia e Cola
+            </button>
           </div>
         )}
       </div>
