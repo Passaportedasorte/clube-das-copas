@@ -117,12 +117,16 @@ export default function Cadastro() {
   
 
     if (profileError) {
-      setErro(profileError.message);
-      setLoading(false);
-      return;
-    }
+  setErro(profileError.message);
+  setLoading(false);
+  return;
+}
 
-    await supabase.auth.signInWithPassword({
+if (typeof window !== "undefined" && (window as any).fbq) {
+  (window as any).fbq("track", "CompleteRegistration");
+}
+
+await supabase.auth.signInWithPassword({
       email,
       password: senha,
     });
