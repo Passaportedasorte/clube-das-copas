@@ -62,17 +62,18 @@ export default function LigaDetalhePage() {
 
   async function carregarRanking(leagueId: string) {
     const { data: membros } = await supabase
-      .from("league_members")
-      .select(`
-        user_id,
-        profiles (
-          id,
-          nome,
-          username
-        )
-      `)
-      .eq("league_id", leagueId)
-      .eq("status", "approved");
+  .from("league_members")
+  .select(`
+    id,
+    user_id,
+    profiles (
+      id,
+      nome,
+      username
+    )
+  `)
+  .eq("league_id", leagueId)
+  .eq("status", "approved");
 
     const rankingComPontos = await Promise.all(
       (membros || []).map(async (membro: any) => {
@@ -94,7 +95,7 @@ export default function LigaDetalhePage() {
           (item) => item.points === 3
         ).length;
 
-        return {
+      return {
   id: membro.user_id,
   memberId: membro.id,
   nome:
@@ -144,10 +145,13 @@ export default function LigaDetalhePage() {
   }
 
   async function aceitar(memberId: string) {
-    await supabase
-      .from("league_members")
-      .update({ status: "approved" })
-      .eq("id", memberId);
+    const { error } = await supabase
+  .from("league_members")
+  .delete()
+  .eq("id", memberId);
+
+console.log("MEMBER ID:", memberId);
+console.log("DELETE ERROR:", error);
 
     await carregar();
   }
