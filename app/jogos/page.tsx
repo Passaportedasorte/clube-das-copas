@@ -447,9 +447,7 @@ export default function Jogos() {
                                         !assinante ||
                                         palpiteBloqueado(match.match_date)
                                       }
-                                      value={
-                                        palpites[match.id]?.home_score || ""
-                                      }
+                                      value={palpites[match.id]?.home_score ?? ""}
                                       className="w-16 md:w-20 h-12 md:h-14 border rounded-2xl text-center text-xl md:text-2xl font-black disabled:bg-gray-100 disabled:text-black/40"
                                       onChange={(e) =>
                                         atualizarPalpite(
@@ -471,9 +469,7 @@ export default function Jogos() {
                                         !assinante ||
                                         palpiteBloqueado(match.match_date)
                                       }
-                                      value={
-                                        palpites[match.id]?.away_score || ""
-                                      }
+                                      value={palpites[match.id]?.away_score ?? ""}
                                       className="w-16 md:w-20 h-12 md:h-14 border rounded-2xl text-center text-xl md:text-2xl font-black disabled:bg-gray-100 disabled:text-black/40"
                                       onChange={(e) =>
                                         atualizarPalpite(
@@ -537,7 +533,7 @@ export default function Jogos() {
   <button
     type="button"
     onClick={() => salvarPalpite(match)}
-    className="w-full mt-5 bg-[#0B6E4F] text-white rounded-2xl py-3 font-black"
+    className="w-full mt-5 bg-[#0B6E4F] text-white rounded-2xl py-3 font-black active:scale-[0.98]"
   >
     Salvar este palpite
   </button>
