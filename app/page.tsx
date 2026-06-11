@@ -95,9 +95,9 @@ export default function Home() {
               </a>
             </div>
 
-            <p className="mt-5 text-sm text-white/60 font-semibold">
-              ⏳ As inscrições encerram quando a Copa começar.
-            </p>
+           <p className="mt-5 text-sm text-[#D4AF37] font-black">
+  🏆 R$ 10.000 em premiações • Entrada única de R$ 49,90
+</p>
           </div>
 
           <div className="grid md:grid-cols-4 gap-5 mt-16 md:mt-24">
