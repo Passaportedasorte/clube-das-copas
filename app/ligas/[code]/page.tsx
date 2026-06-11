@@ -13,7 +13,7 @@ export default function LigaDetalhePage() {
   const [liga, setLiga] = useState<any>(null);
   const [ranking, setRanking] = useState<any[]>([]);
   const [pendentes, setPendentes] = useState<any[]>([]);
-  const [souDono, setSouDono] = useState(false);
+  const [podeGerenciar, setPodeGerenciar] = useState(false);
   const [souMembro, setSouMembro] = useState(false);
 
   useEffect(() => {
@@ -43,7 +43,6 @@ export default function LigaDetalhePage() {
     }
 
     setLiga(ligaData);
-    setSouDono(ligaData.owner_id === userData.user.id);
 
     const { data: meuVinculo } = await supabase
       .from("league_members")
@@ -52,28 +51,33 @@ export default function LigaDetalhePage() {
       .eq("user_id", userData.user.id)
       .maybeSingle();
 
+    const gerencia =
+      ligaData.owner_id === userData.user.id || meuVinculo?.role === "admin";
+
+    setPodeGerenciar(gerencia);
     setSouMembro(meuVinculo?.status === "approved");
 
     await carregarRanking(ligaData.id);
-    await carregarPendentes(ligaData.id, ligaData.owner_id === userData.user.id);
+    await carregarPendentes(ligaData.id, gerencia);
 
     setLoading(false);
   }
 
   async function carregarRanking(leagueId: string) {
     const { data: membros } = await supabase
-  .from("league_members")
-  .select(`
-    id,
-    user_id,
-    profiles (
-      id,
-      nome,
-      username
-    )
-  `)
-  .eq("league_id", leagueId)
-  .eq("status", "approved");
+      .from("league_members")
+      .select(`
+        id,
+        user_id,
+        role,
+        profiles (
+          id,
+          nome,
+          username
+        )
+      `)
+      .eq("league_id", leagueId)
+      .eq("status", "approved");
 
     const rankingComPontos = await Promise.all(
       (membros || []).map(async (membro: any) => {
@@ -95,17 +99,18 @@ export default function LigaDetalhePage() {
           (item) => item.points === 3
         ).length;
 
-      return {
-  id: membro.user_id,
-  memberId: membro.id,
-  nome:
-    membro.profiles?.username ||
-    membro.profiles?.nome ||
-    "Participante",
-  pontos,
-  placaresExatos,
-  acertosResultado,
-};
+        return {
+          id: membro.user_id,
+          memberId: membro.id,
+          role: membro.role,
+          nome:
+            membro.profiles?.username ||
+            membro.profiles?.nome ||
+            "Participante",
+          pontos,
+          placaresExatos,
+          acertosResultado,
+        };
       })
     );
 
@@ -124,20 +129,24 @@ export default function LigaDetalhePage() {
     setRanking(ordenado);
   }
 
-  async function carregarPendentes(leagueId: string, dono: boolean) {
-    if (!dono) return;
+  async function carregarPendentes(leagueId: string, gerencia: boolean) {
+    if (!gerencia) {
+      setPendentes([]);
+      return;
+    }
 
     const { data } = await supabase
       .from("league_members")
       .select(`
-  id,
-  user_id,
-  profiles (
-    id,
-    nome,
-    username
-  )
-`)
+        id,
+        user_id,
+        profiles (
+          id,
+          nome,
+          username,
+          email
+        )
+      `)
       .eq("league_id", leagueId)
       .eq("status", "pending");
 
@@ -145,13 +154,10 @@ export default function LigaDetalhePage() {
   }
 
   async function aceitar(memberId: string) {
-    const { error } = await supabase
-  .from("league_members")
-  .delete()
-  .eq("id", memberId);
-
-console.log("MEMBER ID:", memberId);
-console.log("DELETE ERROR:", error);
+    await supabase
+      .from("league_members")
+      .update({ status: "approved" })
+      .eq("id", memberId);
 
     await carregar();
   }
@@ -165,18 +171,20 @@ console.log("DELETE ERROR:", error);
     await carregar();
   }
 
-async function remover(memberId: string) {
-  const confirmar = confirm("Tem certeza que deseja remover este participante da liga?");
+  async function remover(memberId: string) {
+    const confirmar = confirm(
+      "Tem certeza que deseja remover este participante da liga?"
+    );
 
-  if (!confirmar) return;
+    if (!confirmar) return;
 
-  await supabase
-    .from("league_members")
-    .delete()
-    .eq("id", memberId);
+    await supabase
+      .from("league_members")
+      .delete()
+      .eq("id", memberId);
 
-  await carregar();
-}
+    await carregar();
+  }
 
   async function copiarCodigo() {
     await navigator.clipboard.writeText(liga.code);
@@ -185,7 +193,7 @@ async function remover(memberId: string) {
 
   async function copiarLink() {
     await navigator.clipboard.writeText(
-      `https://clubedascopas.com.br/ligas/${liga.code}`
+      `https://www.clubedascopas.com.br/ligas/${liga.code}`
     );
     alert("Link copiado!");
   }
@@ -217,7 +225,7 @@ async function remover(memberId: string) {
     );
   }
 
-  if (!souMembro && !souDono) {
+  if (!souMembro && !podeGerenciar) {
     return (
       <main className="min-h-screen bg-[#FAFAF7] px-6 py-10">
         <div className="max-w-xl mx-auto bg-white border rounded-3xl p-8 text-center">
@@ -226,7 +234,7 @@ async function remover(memberId: string) {
           </h1>
 
           <p className="text-black/60 mt-3">
-            Sua entrada nessa liga ainda precisa ser aprovada pelo criador.
+            Sua entrada nessa liga ainda precisa ser aprovada por um administrador.
           </p>
 
           <a
@@ -277,10 +285,10 @@ async function remover(memberId: string) {
 
             <div className="bg-[#FAFAF7] border rounded-3xl p-5">
               <p className="text-black/50 font-bold text-sm">
-                Tipo
+                Seu acesso
               </p>
               <p className="text-3xl font-black text-[#063F2F] mt-2">
-                {liga.is_private ? "Privada" : "Pública"}
+                {podeGerenciar ? "Admin" : "Membro"}
               </p>
             </div>
           </div>
@@ -302,7 +310,7 @@ async function remover(memberId: string) {
           </div>
         </div>
 
-        {souDono && pendentes.length > 0 && (
+        {podeGerenciar && pendentes.length > 0 && (
           <div className="mt-8 bg-white border rounded-3xl p-8">
             <h2 className="text-2xl font-black text-[#063F2F]">
               Solicitações pendentes
@@ -371,22 +379,27 @@ async function remover(memberId: string) {
 
                   <div>
                     <p className="font-black">
-                      {item.nome}
+                      {item.nome}{" "}
+                      {item.role === "admin" && (
+                        <span className="text-xs text-[#D4AF37]">
+                          ADMIN
+                        </span>
+                      )}
                     </p>
 
                     <p className="text-xs text-black/50 mt-1">
-  Exatos: {item.placaresExatos} • Resultado:{" "}
-  {item.acertosResultado}
-</p>
+                      Exatos: {item.placaresExatos} • Resultado:{" "}
+                      {item.acertosResultado}
+                    </p>
 
-{souDono && item.id !== userId && (
-  <button
-    onClick={() => remover(item.memberId)}
-    className="mt-2 text-xs font-black text-red-600 hover:underline"
-  >
-    Remover da liga
-  </button>
-)}
+                    {podeGerenciar && item.id !== userId && (
+                      <button
+                        onClick={() => remover(item.memberId)}
+                        className="mt-2 text-xs font-black text-red-600 hover:underline"
+                      >
+                        Remover da liga
+                      </button>
+                    )}
                   </div>
                 </div>
 
