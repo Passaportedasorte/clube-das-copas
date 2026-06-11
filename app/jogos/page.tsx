@@ -264,6 +264,50 @@ export default function Jogos() {
     }, {});
   }
 
+  async function salvarPalpite(match: any) {
+  if (!userId) {
+    window.location.href = "/cadastro";
+    return;
+  }
+
+  if (!assinante) {
+    window.location.href = "/pagamento";
+    return;
+  }
+
+  const palpite = palpites[match.id];
+
+  if (
+    !palpite ||
+    palpite.home_score === "" ||
+    palpite.away_score === ""
+  ) {
+    alert("Preencha os dois placares.");
+    return;
+  }
+
+  const { error } = await supabase
+    .from("predictions")
+    .upsert(
+      {
+        user_id: userId,
+        match_id: match.id,
+        home_score: Number(palpite.home_score),
+        away_score: Number(palpite.away_score),
+      },
+      {
+        onConflict: "user_id,match_id",
+      }
+    );
+
+  if (error) {
+    alert(error.message);
+    return;
+  }
+
+  alert("Palpite salvo!");
+}
+
   if (loading) {
     return <div className="p-10">Carregando...</div>;
   }
@@ -489,6 +533,15 @@ export default function Jogos() {
                                     </p>
                                   )}
                                 </div>
+                                {assinante && !palpiteBloqueado(match.match_date) && (
+  <button
+    type="button"
+    onClick={() => salvarPalpite(match)}
+    className="w-full mt-5 bg-[#0B6E4F] text-white rounded-2xl py-3 font-black"
+  >
+    Salvar este palpite
+  </button>
+)}
                               </div>
                             ))}
                           </div>
