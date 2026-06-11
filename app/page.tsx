@@ -40,7 +40,9 @@ export default function Home() {
             <p className="mt-4 text-lg md:text-xl font-black text-[#D4AF37]">
               🥇 1º Lugar: R$ 5.000 • Entrada: apenas R$ 49,90
             </p>
-
+<div className="mt-4 inline-flex items-center gap-2 bg-white/10 border border-white/10 px-4 py-2 rounded-full text-sm font-bold">
+  🔥 Centenas de palpites já foram cadastrados na plataforma
+</div>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-10">
               <div className="bg-[#D4AF37] text-black rounded-3xl p-5">
                 <p className="text-sm font-bold">🥇 1º Lugar</p>
@@ -187,7 +189,7 @@ export default function Home() {
             <div className="grid md:grid-cols-4 gap-8 mt-12">
               {[
                 ["01", "Crie sua conta"],
-                ["02", "Libere seu acesso"],
+                ["02", "Pague apenas 49,90"],
                 ["03", "Faça seus palpites"],
                 ["04", "Suba no ranking"],
               ].map((item) => (
