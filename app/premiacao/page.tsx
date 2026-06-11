@@ -1,4 +1,12 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import { supabase } from "@/lib/supabase";
+
 export default function Premiacao() {
+  const [active, setActive] = useState(false);
+  const [logado, setLogado] = useState(false);
+
   const premios = [
     { posicao: "1º Lugar", premio: "R$ 5.000", emoji: "🥇" },
     { posicao: "2º Lugar", premio: "R$ 2.500", emoji: "🥈" },
@@ -6,6 +14,26 @@ export default function Premiacao() {
     { posicao: "4º Lugar", premio: "R$ 600", emoji: "🏅" },
     { posicao: "5º Lugar", premio: "R$ 400", emoji: "🏅" },
   ];
+
+  useEffect(() => {
+    async function carregarUsuario() {
+      const { data } = await supabase.auth.getUser();
+
+      if (!data.user) return;
+
+      setLogado(true);
+
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("active")
+        .eq("id", data.user.id)
+        .single();
+
+      setActive(!!profile?.active);
+    }
+
+    carregarUsuario();
+  }, []);
 
   return (
     <main className="min-h-screen bg-[#FAFAF7] text-[#111111] px-6 py-12">
@@ -58,12 +86,34 @@ export default function Premiacao() {
           </div>
         </div>
 
-        <a
-          href="/cadastro"
-          className="block text-center mt-10 bg-[#0B6E4F] text-white rounded-2xl py-4 font-black"
-        >
-          Participar por R$ 49,90
-        </a>
+        {active ? (
+          <div className="mt-10 bg-green-50 border border-green-200 rounded-3xl p-6 text-center">
+            <p className="text-green-700 font-black">
+              ✅ Sua inscrição está confirmada
+            </p>
+
+            <a
+              href="/jogos"
+              className="block text-center mt-5 bg-[#0B6E4F] text-white rounded-2xl py-4 font-black"
+            >
+              Fazer meus palpites
+            </a>
+          </div>
+        ) : logado ? (
+          <a
+            href="/pagamento"
+            className="block text-center mt-10 bg-[#0B6E4F] text-white rounded-2xl py-4 font-black"
+          >
+            Ativar inscrição por R$ 49,90
+          </a>
+        ) : (
+          <a
+            href="/cadastro"
+            className="block text-center mt-10 bg-[#0B6E4F] text-white rounded-2xl py-4 font-black"
+          >
+            Participar por R$ 49,90
+          </a>
+        )}
       </div>
     </main>
   );
