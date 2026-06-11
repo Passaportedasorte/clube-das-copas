@@ -181,6 +181,56 @@ export default function Jogos() {
     return agora >= limite;
   }
 
+  function statusDoPalpite(match: any) {
+  const palpite = palpites[match.id];
+
+  const jogoTemResultado =
+    match.home_score !== null &&
+    match.home_score !== undefined &&
+    match.away_score !== null &&
+    match.away_score !== undefined;
+
+  if (!jogoTemResultado || !palpite) {
+    return null;
+  }
+
+  if (
+    Number(palpite.home_score) === Number(match.home_score) &&
+    Number(palpite.away_score) === Number(match.away_score)
+  ) {
+    return {
+      texto: "✅ Você acertou o placar exato",
+      pontos: 10,
+      classe: "bg-green-50 text-green-700 border-green-200",
+    };
+  }
+
+  const palpiteDiferenca =
+    Number(palpite.home_score) - Number(palpite.away_score);
+
+  const resultadoDiferenca =
+    Number(match.home_score) - Number(match.away_score);
+
+  const acertouResultado =
+    (palpiteDiferenca > 0 && resultadoDiferenca > 0) ||
+    (palpiteDiferenca < 0 && resultadoDiferenca < 0) ||
+    (palpiteDiferenca === 0 && resultadoDiferenca === 0);
+
+  if (acertouResultado) {
+    return {
+      texto: "🟡 Você acertou o vencedor/empate",
+      pontos: 3,
+      classe: "bg-yellow-50 text-yellow-700 border-yellow-200",
+    };
+  }
+
+  return {
+    texto: "❌ Você errou o palpite",
+    pontos: 0,
+    classe: "bg-red-50 text-red-700 border-red-200",
+  };
+}
+
   function atualizarPalpite(matchId: string, campo: string, valor: string) {
     setPalpites((prev: any) => ({
       ...prev,
@@ -522,12 +572,26 @@ export default function Jogos() {
                                     <p className="text-red-600 font-bold text-sm mt-2">
                                       🔒 Palpites encerrados para este jogo
                                     </p>
+                                    
                                   ) : (
                                     <p className="text-[#0B6E4F] font-bold text-sm mt-2">
                                       ⏳ Palpites liberados até 30 minutos antes
                                       do jogo
                                     </p>
                                   )}
+                                  {statusDoPalpite(match) && (
+  <div
+    className={`mt-4 border rounded-2xl p-4 font-black ${
+      statusDoPalpite(match)?.classe
+    }`}
+  >
+    <p>{statusDoPalpite(match)?.texto}</p>
+
+    <p className="text-sm mt-1">
+      Pontuação neste jogo: {statusDoPalpite(match)?.pontos} pts
+    </p>
+  </div>
+)}
                                 </div>
                                 {assinante && !palpiteBloqueado(match.match_date) && (
   <button
